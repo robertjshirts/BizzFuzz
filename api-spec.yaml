@@ -1,0 +1,223 @@
+openapi: '3.0.2'
+info:
+  title: BizzFuzz API
+  version: '0.0.1'
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /sessions/{username}:
+    get:
+      summary: Validate current session for the provided username
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username for the session
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - The session with that username exists
+        '404':
+          description: Not found - The sessions with that username does not exist
+    post:
+      summary: Creates a session
+      description: Validates username and password, and creates a session if a user with credentials exists
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username to validate for session creation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Password'
+      responses:
+        '201':
+          description: Created - The session was created
+        '400':
+          description: Bad request - Missing parts or all of requestBody
+        '403':
+          description: Forbidden - Wrong credentials
+    delete:
+      summary: Deletes a session
+      description: Will only destroy the session if the username matches the session
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username to delete the session
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No content - The session was deleted
+        '404':
+          description: Not found - The session with that username does not exist
+  /users/{username}:
+    get:
+      summary: Retrieve all data for the user in the path parameter
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username to get the information for
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Password'
+      responses:
+        '200':
+          description: OK - Sends all data stored for the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserData'
+        '400':
+          description: Bad request - Missing requestBody
+        '403':
+          description: Forbidden - Wrong credentials
+    post:
+      summary: Create an account with the specified username and password
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username to create with account
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Password'
+      responses:
+        '201': 
+          description: Created - User successfully createdx 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserData'
+        '400':
+          description: Bad request - missing requestBody
+        '409':
+          description: Conflict - Username already taken
+    delete:
+      summary: Delete an account with specified username
+      description: Will fail if password doesn't match
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username of account to be deleted
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Password'
+      responses:
+        '204':
+          description: No Reponse - User successfully deleted
+        '400':
+          description: Bad request - Missing requestBody
+        '403': 
+          description: Forbidden - Wrong credentials
+    put:
+      summary: Change the password of the account
+      parameters:
+      - name: username
+        in: path
+        required: true
+        description: Username of account to be updated
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserData'
+      responses:
+        '200':
+          description: OK - Successfully updated
+        '400':
+          description: Bad request - Missing requestBody
+        '403':
+          description: Forbidden - Wrong credentials
+
+components: 
+  schemas:
+    Password:
+      type: object
+      properties:
+        password:
+          type: string
+          example: 'password123'
+
+    UserData:
+      type: object
+      properties:
+        id:
+          type: string
+          description: uuid v4 prefixed with a 'u'
+          example: 'u45a9d6a1-1b52-48dc-910d-dd84e1a6559c'
+        username:
+          type: string
+          example: 'john_doe'
+        dateCreated:
+          type: integer
+          description: unix time (seconds since epoch)
+          example: '1700458466'
+        completedQuizes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompletedQuiz'
+        #Add image to list of properties later
+
+    UpdateUserData:
+      type: object
+      properties:
+        password:
+          type: string
+          example: 'oldPassword123'
+        newPassword:
+          type: string
+          example: 'newPassword123'
+        #Add image to list of properties later
+
+    CompletedQuiz:
+      type: object
+      properties:
+        quizId:
+          type: string
+          description: uuid v4 prefixed with a 'q'
+          example: 'q812c47c9-8a58-49bc-8a14-4e6af6b566f0'
+        dateTaken:
+          type: integer
+          description: unix time (seconds since epoch)
+          example: '1700458954'
+        result:
+          $ref: '#/components/schemas/QuizResult'
+
+    QuizResult:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Hufflepuff'
+        description:
+          type: string
+          example: 'Congrats you''re a normie!'
