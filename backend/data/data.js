@@ -2,9 +2,9 @@ const {MongoClient} = require('mongodb')
 const { v4: uuidv4 } = require('uuid')
 const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=bizz-fuzz-db'
 
-const userTable = 'users'
-const quiztable = 'quizzes'
-const BizzFuzz = 'bizzfuzz'
+const userTable = 'test' // users
+const quizTable = 'quizzes'
+const BizzFuzz = 'bizzfuzztest'
 
 /**
  * Executes a MongoDB query.
@@ -118,7 +118,7 @@ const createUser = (userInfo, callback) => {
 
 const getUserByUsername = (username, callback) => {
     try{
-        read(username, userTable, callback)
+        read({username}, userTable, callback)
     } catch(err) {
         callback(null, err)
         console.trace()
