@@ -221,3 +221,63 @@ components:
         description:
           type: string
           example: 'Congrats you''re a normie!'
+
+    QuizRequest:
+      type: object
+      properties:
+        quizId:
+          type: string
+          description: uuid v4 prefixed with a 'q'
+          example: 'q57f71583-7e73-4a22-b7fc-4b95b4a6de84'
+    
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: string
+          description: uuid v4 prefixed with a 'q'
+          example: 'q57f71583-7e73-4a22-b7fc-4b95b4a6de84'
+        name:
+          type: string
+          description: name of the quiz
+          example: 'Harry Potter Sorting House Quiz'
+        description:
+          type: string
+          description: accompanying description for the quiz
+          example: 'This quiz sorts you into the Harry Potter house that fits you best'
+        dateCreated:
+          type: integer
+          description: unix time (seconds since epoch)
+          example: '1700458954'
+        creator:
+          type: string
+          description: uuid v4 prefixed with a 'u', aligned with the user that created the quiz
+          example: '9c41e8eb-de7f-4fdc-a2b0-d88b98dc3357'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizResult'
+
+    QuizQuestion:
+      type: object
+      properties:
+        prompt:
+          type: string
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizAnswer'
+
+    QuizAnswer:
+      type: object
+      properties:
+        option:
+          type: string
+        result:
+          type: integer
+        weight:
+          type: integer
