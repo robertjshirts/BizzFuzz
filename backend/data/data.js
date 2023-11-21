@@ -44,13 +44,13 @@ const create = async (data, table, callback) => {
             }
             data.dateCreated = Date.now()
             let result = await collection.insertOne(data)
-            callback(result)
+            callback(result, null)
         })
     }catch(err){
         if(err.code === 11000){
-            callback(err.code)
+            callback(null, err.code)
         } else {
-            callback(err)
+            callback(null, err)
         }
     }
 }
@@ -65,7 +65,7 @@ const read = async (identifier, table, callback) => {
     await executeQuery(async (database) => {
         collection = database.collection(table)
         let result = await collection.findOne(identifier)
-        callback(result)
+        callback(result, null)
     })
 }
 
@@ -81,7 +81,7 @@ const update = async (identifier, change, table, callback) => {
         collection = database.collection(table)
         change.$set.lastUpdated = Date.now()
         let result = await collection.updateOne(identifier, change)
-        callback(result)
+        callback(result, null)
     })
 }
 
@@ -94,8 +94,8 @@ const update = async (identifier, change, table, callback) => {
 const remove = async (identifier, table, callback) => { // called rmeoved because delete is a key word
     executeQuery(async (database) => {
         collection = database.collection(table)
-        await collection.deleteOne(identifier)
-        callback()
+        let result = await collection.deleteOne(identifier)
+        callback(result, null)
     })
 }
 
@@ -116,6 +116,15 @@ const createUser = (userInfo, callback) => {
     }
 }
 
+const getUserByUsername = (username, callback) => {
+    try{
+        read(username, userTable, callback)
+    } catch(err) {
+        callback(null, err)
+        console.trace()
+    }
+}
+
 /**
  * Retrieves a user by their ID.
  * @param {string} _id - The ID of the user to retrieve.
@@ -126,7 +135,7 @@ const getUser = (_id, callback) => {
         read({_id}, userTable, callback)
     }catch(err){
         console.trace(err)
-        callback(err)
+        callback(null, err)
     }
 }
 
@@ -136,7 +145,12 @@ const getUser = (_id, callback) => {
  * @param {Function} callback - Callback function to handle the result.
  */
 const deleteUser = (_id, callback) => {
-    remove({_id}, userTable, callback)
+    try{
+        remove({_id}, userTable, callback)
+    } catch(err){
+        callback(null, err)
+        console.trace(err)
+    }
 }
 
 /**
@@ -152,7 +166,7 @@ const updateUser = (_id, changeData, callback) => {
         }
         update({_id}, updateData, userTable, callback)
     } catch(err){
-        callback(err)
+        callback(null, err)
     }
 }
 
@@ -176,6 +190,7 @@ module.exports = {
     createUser: createUser,
     getUser: getUser,
     deleteUser: deleteUser,
-    updateUser: updateUser
+    updateUser: updateUser,
+    getUserByUsername: getUserByUsername
 }
 
