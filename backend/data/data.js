@@ -141,9 +141,9 @@ const getUserByUsername = (username, callback) => {
  * @param {string} _id - The ID of the user to retrieve.
  * @param {Function} callback - Callback function to handle the result.
  */
-const getUser = (_id, callback) => {
+const getUser = (userID, callback) => {
     try{
-        read({_id}, userTable, callback)
+        read({_id : userID}, userTable, callback)
     }catch(err){
         console.trace(err)
         callback(null, err)
@@ -155,9 +155,9 @@ const getUser = (_id, callback) => {
  * @param {string} _id - The ID of the user to delete.
  * @param {Function} callback - Callback function to handle the result.
  */
-const deleteUser = (_id, callback) => {
+const deleteUser = (userID, callback) => {
     try{
-        remove({_id}, userTable, callback)
+        remove({_id : userID}, userTable, callback)
     } catch(err){
         callback(null, err)
         console.trace(err)
@@ -170,18 +170,23 @@ const deleteUser = (_id, callback) => {
  * @param {Object} changeData - The changes to apply to the user's information.
  * @param {Function} callback - Callback function to handle the result.
  */
-const updateUser = (_id, changeData, callback) => {
+const updateUser = (userID, changeData, callback) => {
     try{
         updateData = {
             $set: changeData 
         }
-        update({_id}, updateData, userTable, callback)
+        update({_id : userID}, updateData, userTable, callback)
     } catch(err){
         callback(null, err)
         console.trace(err)
     }
 }
 
+/**
+ * Adds a qiuz to the quiz database
+ * @param {Object} quizInfo The quiz object
+ * @param {function} callback returns (result, err)
+ */
 const createQuiz = (quizInfo, callback) => {
     try{
         create(quizInfo, quiztable, callback)
@@ -191,26 +196,32 @@ const createQuiz = (quizInfo, callback) => {
     }
 }
 
-const postQuiz = (_id, quizResult, callback) => {
+/**
+ *  Stores the quiz that a suer took into the users profile
+ * @param {string} _id The id of the user that took the quiz
+ * @param {Object} quizResult The quiz results
+ * @param {function} callback returns (result, err)
+ */
+const postQuiz = (userID, quizResult, callback) => {
     try{
         appendedData = {
             $push:{completedQuizzes: {quizResult}} 
         }
-        update(_id, appendedData, quiztable, callback)
+        update({_id : userID}, appendedData, quiztable, callback)
     } catch(err){
         callback(null, err)
     }
 }
 
-const getQuiz = (_id, callback) => {
+const getQuiz = (quizID, callback) => {
     
 }
 
-const getQuizlet = (_id, quizData) => {
+const getQuizlet = (_id, quizData, callback) => {
     
 }
 
-const daleteQuiz = () => {
+const daleteQuiz = (quizID, callback) => {
     
 }
 
