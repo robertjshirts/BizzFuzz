@@ -2,21 +2,25 @@ const {MongoClient} = require('mongodb')
 const { v4: uuidv4 } = require('uuid')
 const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=bizz-fuzz-db'
 
-const userTable = 'users'
+const userTable = 'test'
 const quiztable = 'quizzes'
-const BizzFuzz = 'bizzfuzz'
+const BizzFuzz = 'bizzfuzztest'
 
 /**
  * Executes a MongoDB query.
  * @param {Function} query - The query to be executed against the database.
  */
-const executeQuery = async (query) => {
+const executeQuery = async (query, callback) => {
     const client = new MongoClient(url)
     try{
         const database = client.db(BizzFuzz)
         await query(database)
     } catch(err){
-        console.trace('Error: ' + err)
+        if(err.code === 11000){
+            callback(null, err.code)
+        } else {
+            callback(null, err)
+        }
     } finally {
         client.close()
     }
@@ -27,7 +31,7 @@ const executeQuery = async (query) => {
  * Creates a new document in the specified table.
  * @param {Object} data - The data to be inserted.
  * @param {string} table - The table (collection) in which to insert the data.
- * @param {Function} callback - Callback function to handle the result.
+ * @param {Function} callback - Callback function to handle the result or err. (result, err)
  */
 const create = async (data, table, callback) => {
     try{
@@ -45,11 +49,12 @@ const create = async (data, table, callback) => {
             data.dateCreated = Date.now()
             let result = await collection.insertOne(data)
             callback(result, null)
-        })
+        }, callback)
     }catch(err){
-        if(err.code === 11000){
+        if(err === 11000){
             callback(null, err.code)
         } else {
+            console.log("cresta")
             callback(null, err)
         }
     }
@@ -66,7 +71,7 @@ const read = async (identifier, table, callback) => {
         collection = database.collection(table)
         let result = await collection.findOne(identifier)
         callback(result, null)
-    })
+    }, callback)
 }
 
 /**
@@ -82,7 +87,7 @@ const update = async (identifier, change, table, callback) => {
         change.$set.lastUpdated = Date.now()
         let result = await collection.updateOne(identifier, change)
         callback(result, null)
-    })
+    }, callback)
 }
 
 /**
@@ -96,7 +101,7 @@ const remove = async (identifier, table, callback) => { // called rmeoved becaus
         collection = database.collection(table)
         let result = await collection.deleteOne(identifier)
         callback(result, null)
-    })
+    }, callback)
 }
 
 /**
@@ -109,13 +114,19 @@ const createUser = (userInfo, callback) => {
         create(userInfo, userTable, callback)
     } catch(err) {
         if(err.code === 11000){
-            callback(err.code)
+            callback(null, err.code)
         } else {
+            console.log("user")
             console.trace()
         }
     }
 }
 
+/**
+ * Searches the database for a user based on username
+ * @param {string} username The username of the user you are looking for
+ * @param {function} callback Callback function to handle the result and err. (result, err)
+ */
 const getUserByUsername = (username, callback) => {
     try{
         read(username, userTable, callback)
@@ -167,30 +178,49 @@ const updateUser = (_id, changeData, callback) => {
         update({_id}, updateData, userTable, callback)
     } catch(err){
         callback(null, err)
+        console.trace(err)
     }
 }
 
-// const postQuiz = () => {
+const createQuiz = (quizInfo, callback) => {
+    try{
+        create(quizInfo, quiztable, callback)
+    } catch(err){
+        callback(null, err)
+        console.trace(err)
+    }
+}
 
-// }
+const postQuiz = (_id, quizResult, callback) => {
+    try{
+        appendedData = {
+            $push:{completedQuizzes: {quizResult}} 
+        }
+        update(_id, appendedData, quiztable, callback)
+    } catch(err){
+        callback(null, err)
+    }
+}
 
-// const getQuiz = () => {
+const getQuiz = (_id, callback) => {
     
-// }
+}
 
-// const getQuizlet = () => {
+const getQuizlet = (_id, quizData) => {
     
-// }
+}
 
-// const daleteQuiz = () => {
+const daleteQuiz = () => {
     
-// }
+}
 
 module.exports = {
     createUser: createUser,
     getUser: getUser,
     deleteUser: deleteUser,
     updateUser: updateUser,
-    getUserByUsername: getUserByUsername
+    getUserByUsername: getUserByUsername,
+    createQuiz: createQuiz,
+    postQuiz: postQuiz
 }
 
