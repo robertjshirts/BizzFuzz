@@ -59,6 +59,7 @@ const signUpUser = async (userJson, callback) => {
     data.createUser(userJson, (result, err)=>{
         if(err === 11000){
             callback(null,errCodes[101])
+            return;
         }
         let user = {
             "userId": result.insertedId,
@@ -80,6 +81,7 @@ const logInUser = (userJson, callback) =>{
     userStoredData = data.getUserByUsername(userJson.username, (result,err)=>{
         if(err){
             callback(null,err)
+            return;
         }
         if(comparePasswords(userJson.password,result.password)){
             let user = {
@@ -107,6 +109,7 @@ const getUserData = (userId, callback) => {
     userData = data.getUser(userId, (result, err) => {
         if (err) {
             callback(null, (err + " : " + errCodes[103]))
+            return;
         }
         delete result.password
         callback(result, err)
@@ -126,6 +129,7 @@ const updateUser = (userJson, newData, callback)=>{
     data.updateUser(userJson.userId,newData,(result,err)=>{
         if(err){
             callback(null,err)
+            return;
         }
         callback(result,null)
     })
@@ -143,6 +147,7 @@ const deleteUser = (UserId, callback)=>{
     data.deleteUser(UserId,(result,err)=>{
         if(err){
             callback(null,(err + " : " + errCodes[103]))
+            return;
         }
         callback(result,null)
     })
