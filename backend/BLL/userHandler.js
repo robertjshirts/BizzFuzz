@@ -93,6 +93,23 @@ const logInUser = (userJson, callback) =>{
 
 
 /**
+ * returns the entire user object with the specified user ID
+ * 
+ * @param {String} userId the id of the user object that is to be returned
+ * @param {function(result,err)} callback passed function to handle the result and error outcome
+ */
+const getUserData = (userId, callback) => {
+
+    userData = data.getUser(userId, (result, err) => {
+        if (err) {
+            callback(null, err)
+        }
+        callback(result, err)
+    })
+
+}
+
+/**
  * sends new user data fields to the DAL
  * 
  * @param {Json} userJson _id, username
@@ -110,9 +127,28 @@ const updateUser = (userJson, newData, callback)=>{
 
 }
 
+
+/**
+ * deletes a user based off of thier id
+ * 
+ * @param {String} UserId the id of the user object that is to be deleted
+ * @param {function(result,err)} callback passed function to handle the result and error outcome
+ */
+const deleteUser = (UserId, callback)=>{
+    data.deleteUser(UserId,(result,err)=>{
+        if(err){
+            callback(null,err)
+        }
+        callback(result,null)
+    })
+
+}
+
 module.exports = {
    logIn: logInUser,
    signUp: signUpUser,
-   updateUser: updateUser
+   updateUser: updateUser,
+   deleteUser: deleteUser,
+   getUserData: getUserData
 }
 
