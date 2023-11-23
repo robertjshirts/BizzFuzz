@@ -2,8 +2,8 @@ const {MongoClient} = require('mongodb')
 const { v4: uuidv4 } = require('uuid')
 const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=bizz-fuzz-db'
 
-const userTable = 'test'
-const quiztable = 'quizzes'
+const userTable = 'users'
+const quizTable = 'test'
 const BizzFuzz = 'bizzfuzztest'
 
 /**
@@ -54,7 +54,6 @@ const create = async (data, table, callback) => {
         if(err === 11000){
             callback(null, err.code)
         } else {
-            console.log("cresta")
             callback(null, err)
         }
     }
@@ -84,8 +83,11 @@ const read = async (identifier, table, callback) => {
 const update = async (identifier, change, table, callback) => {
     executeQuery(async (database) => {
         collection = database.collection(table)
-        change.$set.lastUpdated = Date.now()
-        let result = await collection.updateOne(identifier, change)
+        let updateChange = {
+            ...change,
+            $set: { ...change.$set, lastUpdated: Date.now() }
+        }
+        let result = await collection.updateOne(identifier, updateChange)
         callback(result, null)
     }, callback)
 }
@@ -104,6 +106,15 @@ const remove = async (identifier, table, callback) => { // called rmeoved becaus
     }, callback)
 }
 
+const search = (filter, numberOfItems, table, callback) => {
+    executeQuery(async (database) => {
+        collection = database.collection(table)
+        let result = await collection.find(filter).limit(numberOfItems).toArray()
+        console.log(result)
+        callback(result, null)
+    }, callback)
+}
+
 /**
  * Creates a new user.
  * @param {Object} userInfo - The information about the user to be created.
@@ -116,7 +127,6 @@ const createUser = (userInfo, callback) => {
         if(err.code === 11000){
             callback(null, err.code)
         } else {
-            console.log("user")
             console.trace()
         }
     }
@@ -189,7 +199,7 @@ const updateUser = (userID, changeData, callback) => {
  */
 const createQuiz = (quizInfo, callback) => {
     try{
-        create(quizInfo, quiztable, callback)
+        create(quizInfo, quizTable, callback)
     } catch(err){
         callback(null, err)
         console.trace(err)
@@ -205,24 +215,52 @@ const createQuiz = (quizInfo, callback) => {
 const postQuiz = (userID, quizResult, callback) => {
     try{
         appendedData = {
-            $push:{completedQuizzes: {quizResult}} 
+            $push:{completedQuizzes: quizResult} 
         }
-        update({_id : userID}, appendedData, quiztable, callback)
+        update({_id : userID}, appendedData, userTable, callback)
     } catch(err){
         callback(null, err)
     }
 }
 
+/**
+ * Gets a single quiz from the quiz database
+ * @param {string} quizID The id of the quiz you are looking fo rin the database
+ * @param {function} callback callback function
+ */
 const getQuiz = (quizID, callback) => {
-    
+    try{
+        read({_id : quizID}, quizTable, callback)
+    } catch(err){
+        callback(null, err)
+    }
 }
 
-const getQuizlet = (_id, quizData, callback) => {
-    
+const getQuizlets = (callback) => {
+    try{
+        search({}, 9, quizTable, callback)
+    } catch(err){
+        callback(null, err)
+    }
 }
 
-const daleteQuiz = (quizID, callback) => {
-    
+const deleteQuiz = (quizID, callback) => {
+    try{
+        remove({_id: quizID}, quizTable, callback)
+    } catch(err) {
+        callback(null, err)
+    }
+}
+
+const updateQuiz = (quizID, changeData, callback) => {
+    try{
+        updateData = {
+            $set: changeData 
+        }
+        update({_id: quizID}, updateData, quizTable, callback)
+    } catch(err) {
+        callback(null, err)
+    }
 }
 
 module.exports = {
@@ -232,6 +270,10 @@ module.exports = {
     updateUser: updateUser,
     getUserByUsername: getUserByUsername,
     createQuiz: createQuiz,
-    postQuiz: postQuiz
+    postQuiz: postQuiz,
+    getQuiz: getQuiz,
+    getQuizlets: getQuizlets,
+    deleteQuiz: deleteQuiz,
+    updateQuiz: updateQuiz
 }
 
