@@ -104,6 +104,7 @@ const getUserData = (userId, callback) => {
         if (err) {
             callback(null, err)
         }
+        delete result.password
         callback(result, err)
     })
 
