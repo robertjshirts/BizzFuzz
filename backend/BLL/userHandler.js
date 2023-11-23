@@ -10,6 +10,10 @@ const errCodes = {
     102: {
         "err": "incorrect username/password",
         "code":102
+    },
+    103: {
+        "err": "user id doesn't exist",
+        "code":103
     }
 }
 /**
@@ -102,7 +106,7 @@ const getUserData = (userId, callback) => {
 
     userData = data.getUser(userId, (result, err) => {
         if (err) {
-            callback(null, err)
+            callback(null, (err + " : " + errCodes[103]))
         }
         delete result.password
         callback(result, err)
@@ -138,7 +142,7 @@ const updateUser = (userJson, newData, callback)=>{
 const deleteUser = (UserId, callback)=>{
     data.deleteUser(UserId,(result,err)=>{
         if(err){
-            callback(null,err)
+            callback(null,(err + " : " + errCodes[103]))
         }
         callback(result,null)
     })
