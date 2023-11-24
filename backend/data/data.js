@@ -236,9 +236,9 @@ const getQuiz = (quizID, callback) => {
     }
 }
 
-const getQuizlets = (callback) => {
+const getQuizlets = (quizIDs, callback) => {
     try{
-        search({}, 9, quizTable, callback)
+        search({_id : {$in : quizIDs}}, 9, quizTable, callback)
     } catch(err){
         callback(null, err)
     }
