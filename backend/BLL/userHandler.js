@@ -2,20 +2,6 @@
 const bcrypt = require('bcryptjs');
 const data = require('../data/data.js');
 
-const errCodes = {
-    101: {
-        "err": "non unique username",
-        "code": 101
-    },
-    102: {
-        "err": "incorrect username/password",
-        "code":102
-    },
-    103: {
-        "err": "user id doesn't exist",
-        "code":103
-    }
-}
 /**
  * @typedef {Object} UserJson
  * @property {string} username - The user's name
@@ -57,15 +43,17 @@ const signUpUser = async (userJson, callback) => {
 
     userJson.password = await hashPassword(userJson.password)
     data.createUser(userJson, (result, err)=>{
-        if(err === 11000){
-            callback(null,errCodes[101])
+        if(err){
+            callback(null,err)
             return;
         }
+        else{
         let user = {
             "userId": result.insertedId,
             "username": userJson.username
         }
-        callback(user,err)
+        callback(user,null)
+    }
     })
 
 }
@@ -73,7 +61,7 @@ const signUpUser = async (userJson, callback) => {
 /**
  * Calls DAL user Craete and hashes user password
  * 
- * @param {UserJson} userJson
+ * @param {UserJson} userJson the username and the password
  * @param {function(result,err)} callback passed function to handle the result and error outcome
  */
 const logInUser = (userJson, callback) =>{
@@ -90,7 +78,7 @@ const logInUser = (userJson, callback) =>{
             }
             callback(user,null)
         }else{
-            callback(null,errCodes[102])
+            callback(null,err)
         }
 
     })
@@ -108,11 +96,11 @@ const getUserData = (userId, callback) => {
 
     userData = data.getUser(userId, (result, err) => {
         if (err) {
-            callback(null, (err + " : " + errCodes[103]))
+            callback(null, (err))
             return;
         }
         delete result.password
-        callback(result, err)
+        callback(result, null)
     })
 
 }
@@ -120,13 +108,13 @@ const getUserData = (userId, callback) => {
 /**
  * sends new user data fields to the DAL
  * 
- * @param {Json} userJson _id, username
+ * @param {String} userId _id of the user to be updated
  * @param {Json} newData Json object that holds all fields that wish to be changed and the new values
  * @param {function(result,err)} callback passed function to handle the result and error outcome
  */
-const updateUser = (userJson, newData, callback)=>{
+const updateUser = (userId, newData, callback)=>{
 
-    data.updateUser(userJson.userId,newData,(result,err)=>{
+    data.updateUser(userId,newData,(result,err)=>{
         if(err){
             callback(null,err)
             return;
@@ -146,7 +134,7 @@ const updateUser = (userJson, newData, callback)=>{
 const deleteUser = (UserId, callback)=>{
     data.deleteUser(UserId,(result,err)=>{
         if(err){
-            callback(null,(err + " : " + errCodes[103]))
+            callback(null,(err))
             return;
         }
         callback(result,null)
