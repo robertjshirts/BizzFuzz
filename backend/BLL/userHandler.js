@@ -115,6 +115,9 @@ const getUserData = (userId, callback) => {
 const updateUser = (userId, newData, callback)=>{
 
     data.updateUser(userId,newData,(result,err)=>{
+        if(newData.password){
+            newData.password = hashPassword(newData.password)
+        }
         if(err){
             callback(null,err)
             return;
@@ -141,6 +144,7 @@ const deleteUser = (UserId, callback)=>{
     })
 
 }
+
 
 module.exports = {
    logIn: logInUser,
