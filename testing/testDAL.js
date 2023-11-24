@@ -78,7 +78,7 @@ const updateQuiz = (quizID) => {
     })
 }
 
-const updateUser = ()
+const updateUser = () => {}
 
 arrayOfQuiz = ['q9366e7dd-0fa2-4b68-9250-3eb03b1867f7','q9c33c0fd-56e5-4975-a067-4b3b974f7e3e']
 
