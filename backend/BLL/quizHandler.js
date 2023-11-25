@@ -78,6 +78,7 @@ const getNewQuizzes = async (userId, callback) => {
  * @param {callback(result, err)} callback result = {acknowledged:BOOLEAN , deletedCount:INT}
  */
 const deleteUserQuiz = (userId, quizId, callback) => {
+    // the user id is for if we add quizzes to the user object if we decide against it I will remove it
     data.deleteQuiz(quizId, (result,err)=>{
         callback(result,err)
     })
@@ -89,4 +90,3 @@ module.exports = {
     getNewQuizzes: getNewQuizzes,
     deleteUserQuiz: deleteUserQuiz
 }
-
