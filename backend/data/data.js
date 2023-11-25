@@ -236,6 +236,11 @@ const getQuiz = (quizID, callback) => {
     }
 }
 
+/**
+ * uses given IDs to find an array of quizzes
+ * @param {Array} quizIDs an array of quiz ids of the quizzes you want to find
+ * @param {function} callback callback function
+ */
 const getQuizlets = (quizIDs, callback) => {
     try{
         search({_id : {$in : quizIDs}}, 9, quizTable, callback)
@@ -244,6 +249,11 @@ const getQuizlets = (quizIDs, callback) => {
     }
 }
 
+/**
+ * deletes a quiz from the database
+ * @param {string} quizID The id of the quiz that you want to delete
+ * @param {function} callback callback funciton
+ */
 const deleteQuiz = (quizID, callback) => {
     try{
         remove({_id: quizID}, quizTable, callback)
