@@ -112,12 +112,12 @@ const getUserData = (userId, callback) => {
  * @param {Json} newData Json object that holds all fields that wish to be changed and the new values
  * @param {function(result,err)} callback passed function to handle the result and error outcome
  */
-const updateUser = (userId, newData, callback)=>{
-
-    data.updateUser(userId,newData,(result,err)=>{
-        if(newData.password){
-            newData.password = hashPassword(newData.password)
-        }
+const updateUser = async (userId, newData, callback)=>{
+    if(newData.password){
+        newData.password = await hashPassword(newData.password)
+    }
+    data.updateUser(userId,newData, (result,err)=>{
+        
         if(err){
             callback(null,err)
             return;
