@@ -6,7 +6,7 @@ const users = require('./userHandler.js');
  * takes the user Id and returns up to 9 new quizlets in an array
  * 
  * @param {String} UserId the id of the user object that is to be deleted
- * @param {function(result,err)} callback passed function to handle the result and error outcome (result = array of quizzes)
+ * @param {function(result,err)} callback passed function to handle the result and error outcome (result = [array of quizlets])
  */
 const getNewQuizzes = async (userId, callback) => {
 
