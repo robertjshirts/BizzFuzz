@@ -29,6 +29,7 @@ async function hashPassword(password) {
  */
 async function comparePasswords(testPassword, storedPassword){
     let isValid = bcrypt.compareSync(storedPassword, testPassword)
+    console.log(isValid)
     return isValid
 }
 
@@ -71,13 +72,15 @@ const logInUser = (userJson, callback) =>{
             callback(null,err)
             return;
         }
-        
-        if(await comparePasswords(userJson.password,result.password)){
+        let comp = await comparePasswords(userJson.password,result.password)
+        //console.log(comp)
+        if(comp){
             let user = {
                 "userId": result._id,
                 "username": result.username
             }
             callback(user,null)
+            return;
         }else{
             callback(null,'wrong username/password')
         }
