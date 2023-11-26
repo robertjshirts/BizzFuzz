@@ -28,7 +28,7 @@ async function hashPassword(password) {
  * @returns boolean showing true if both passwords match
  */
 async function comparePasswords(testPassword, storedPassword){
-    let isValid = bcrypt.compareSync(storedPassword, testPassword)
+    let isValid = bcrypt.compareSync(testPassword, storedPassword)
     return isValid
 }
 
@@ -66,19 +66,20 @@ const signUpUser = async (userJson, callback) => {
  */
 const logInUser = (userJson, callback) =>{
 
-    userStoredData = data.getUserByUsername(userJson.username, (result,err)=>{
+    userStoredData = data.getUserByUsername(userJson.username, async (result,err)=>{
         if(err){
             callback(null,err)
             return;
         }
-        if(comparePasswords(userJson.password,result.password)){
+        
+        if(await comparePasswords(userJson.password,result.password)){
             let user = {
                 "userId": result._id,
                 "username": result.username
             }
             callback(user,null)
         }else{
-            callback(null,err)
+            callback(null,'wrong username/password')
         }
 
     })
@@ -112,9 +113,12 @@ const getUserData = (userId, callback) => {
  * @param {Json} newData Json object that holds all fields that wish to be changed and the new values
  * @param {function(result,err)} callback passed function to handle the result and error outcome
  */
-const updateUser = (userId, newData, callback)=>{
-
-    data.updateUser(userId,newData,(result,err)=>{
+const updateUser = async (userId, newData, callback)=>{
+    if(newData.password){
+        newData.password = await hashPassword(newData.password)
+    }
+    data.updateUser(userId,newData, (result,err)=>{
+        
         if(err){
             callback(null,err)
             return;
@@ -141,6 +145,7 @@ const deleteUser = (UserId, callback)=>{
     })
 
 }
+
 
 module.exports = {
    logIn: logInUser,
