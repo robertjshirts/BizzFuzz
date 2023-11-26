@@ -115,6 +115,12 @@ const search = (filter, numberOfItems, table, callback) => {
     }, callback)
 }
 
+const searchType = (filter, type, numberOfItems, table, callback) => {
+    if(type = "mostPopular"){
+        
+    }
+}
+
 /**
  * Creates a new user.
  * @param {Object} userInfo - The information about the user to be created.
@@ -243,7 +249,7 @@ const getQuiz = (quizID, callback) => {
  */
 const getQuizlets = (quizIDs, callback) => {
     try{
-        search({_id : {$in : quizIDs}}, 9, quizTable, callback)
+        search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
     } catch(err){
         callback(null, err)
     }

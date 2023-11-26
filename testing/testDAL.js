@@ -86,7 +86,7 @@ arrayOfQuiz = ['q9366e7dd-0fa2-4b68-9250-3eb03b1867f7','q9c33c0fd-56e5-4975-a067
 //userTakesQuiz("u98c7df55-afb6-40c3-b6d6-56e30c55799e", quiz)
 //createQuiz(quiz)
 //getQuiz("q992b90a9-5733-450f-bbe5-742f79bdd0a5")
-//getQuizlets(arrayOfQuiz)
+getQuizlets(arrayOfQuiz)
 //deleteQuiz("q992b90a9-5733-450f-bbe5-742f79bdd0a5")
 //updateQuiz("qecd0f1d5-f16b-430e-a188-35f586fef15d")
 
