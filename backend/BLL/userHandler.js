@@ -28,7 +28,7 @@ async function hashPassword(password) {
  * @returns boolean showing true if both passwords match
  */
 async function comparePasswords(testPassword, storedPassword){
-    let isValid = bcrypt.compareSync(storedPassword, testPassword)
+    let isValid = bcrypt.compareSync(testPassword, storedPassword)
     return isValid
 }
 
