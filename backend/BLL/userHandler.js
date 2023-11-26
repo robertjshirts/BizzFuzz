@@ -66,19 +66,20 @@ const signUpUser = async (userJson, callback) => {
  */
 const logInUser = (userJson, callback) =>{
 
-    userStoredData = data.getUserByUsername(userJson.username, (result,err)=>{
+    userStoredData = data.getUserByUsername(userJson.username, async (result,err)=>{
         if(err){
             callback(null,err)
             return;
         }
-        if(comparePasswords(userJson.password,result.password)){
+        
+        if(await comparePasswords(userJson.password,result.password)){
             let user = {
                 "userId": result._id,
                 "username": result.username
             }
             callback(user,null)
         }else{
-            callback(null,err)
+            callback(null,'wrong username/password')
         }
 
     })
