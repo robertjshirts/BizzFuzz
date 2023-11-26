@@ -1,67 +1,203 @@
 const express = require('express');
 const router = express.Router();
+const userHandler = require('../BLL/userHandler');
 const path = require('path');
 
-router.get('/:username', (req, res) => {
-    if (req.session.userId === req.params.username) {
-        res.status(200).send( req.session.userId ) // replace with data from DAL
-    } else {
-        const { password } = req.body;
-        const username = req.params.username;
-        if (!password) {
-            res.status(400).send();
+const getWithSession = (req, res) => {
+    userHandler.getUserData(req.session.userId, (result, err) => {
+        if (err) {
+            res.status(500).send({ err: err });
             return;
         }
-        // If login works
-        res.status(200).send( username ); // Add some json with the user data instead of username
+        res.status(200).send(result);
         return;
-        // If login doesn't work (wrong user/pass)
-        res.status(401).send();
+    });
+}
+
+const getWithoutSession = (req, res) => {
+    if (!req.body || !req.body.password) {
+        res.status(400).send("Missing password field in requestBody!");
+        return;
+    }
+
+    const userData = {
+        username: req.params.username,
+        password: req.body.password
+    }
+
+    userHandler.logIn(userData, (result, err) => {
+        if (err) {
+            res.status(403).send();
+            return;
+        }
+
+        userHandler.getUserData(result.userId, (result, err) => {
+            if (err) {
+                res.status(500).send();
+                return;
+            }
+            res.status(200).send(result);
+        });
+    })
+}
+
+router.get('/:username', (req, res) => {
+    if (req.session.signedIn) {
+        getWithSession(req, res);
+    } else {
+        getWithoutSession(req, res);
     }
 });
+
+const postWithoutSession = (req, res) => {
+    if (!req.body || !req.body.password) {
+        res.status(400).send("Missing password field in requestBody!");
+        return;
+    }
+
+    const userData = {
+        username: req.params.username,
+        password: req.body.password
+    };
+
+    userHandler.signUp(userData, (result, err) => {
+        if (err) {
+            res.status(409).send("Username already in use!");
+            return;
+        }
+
+        req.session.signedIn = true;
+        req.session.userId = result.userId;
+        req.session.username = result.username;
+        req.session.password = userData.password;
+        res.status(201).send("User successfully created");
+    })
+};
 
 router.post('/:username', (req, res) => {
-    const { password } = req.body;
-    const username = req.params.username;
-    if (!password) {
-        res.status(400).send();
-        return;
-    }
-    // If username not taken and user created successfully
-    req.session.userId = username // Replace with bllResponse.username
-    res.status(201).send( {username: username, password: password} ); // Replace with full user object
-    return;
-    // If username taken
-    res.status(409).send();
+    postWithoutSession(req, res);
 });
 
-router.delete('/:username', (req, res) => {
-    const { password } = req.body;
-    const username = req.params.username;
-    if (!password) {
-        res.status(400).send();
+const deleteWithSession = (req, res) => {
+    if (req.session.username !== req.params.username) {
+        res.status(403).send("Not logged into correct account!");
         return;
     }
-    // If credentials match
-    req.session.destroy();
-    res.status(204).send();
-    return;
-    // If credentials don't match
-    res.status(403).send();
+
+    userHandler.deleteUser(req.session.userId, (result, err) => {
+        if (err) {
+            res.status(500).send("There was an internal error");
+            return;
+        }
+
+        req.session.signedIn = false;
+        req.session.userId = null;
+        req.session.username = null;
+        req.session.password = null;
+
+        res.status(204).send();
+    });
+};
+
+const deleteWithoutSession = (req, res) => {
+    if (!req.body || !req.body.password) {
+        res.status(400).send("Missing password field in requestBody!");
+        return;
+    }
+
+    const userData = {
+        username: req.params.username,
+        password: req.body.password
+    };
+
+    userHandler.logIn(userData, (result, err) => {
+        if (err) {
+            res.status(403).send("Wrong credentials!");
+            return;
+        }
+
+        userHandler.deleteUser(result.userId, (result, err) => {
+            if (err) {
+                res.status(500).send("There was an internal error");
+                return;
+            }
+
+            res.status(204).send();
+        })
+    })
+};
+
+router.delete('/:username', (req, res) => {
+    if (req.session.signedIn) {
+        deleteWithSession(req, res);
+    } else {
+        deleteWithoutSession(req, res);
+    }
 })
 
-router.put('/:username', (req, res) => {
-    const { password, newPassword } = req.body;
-    const username = req.params.username;
-    if (!password || !newPassword) {
-        res.status(400).send();
+const putWithSession = (req, res) => {
+    if (req.params.username !== req.session.username) {
+        res.status(403).send("Not logged into correct account!");
         return;
     }
-    // If credentials match and update was successful
-    res.status(200).send();
-    return;
-    // If credentials don't match
-    res.status(403).send();
+
+    if (!req.body || req.body.newPassword) {
+        res.status(400).send("Missing newPassword field in requestBody!");
+        return;
+    }
+
+    const updateData = { password: req.body.newPassword };
+
+    userHandler.updateUser(req.session.userId, updateData, (result, err) => {
+        if (err) {
+            res.status(500).send("There was an internal error!");
+            return;
+        }
+        
+        req.session.password = updateData.password;
+
+        res.status(200).send("Password successfully updated");
+    }) 
+};
+
+const putWithoutSession = (req, res) => {
+    if (!req.body || !req.body.password || !req.body.newPassword) {
+        res.status(400).send("Missing password field or newPassword field in requestBody!");
+        return;
+    }
+    
+    const userData = {
+        username: req.params.username,
+        password: req.body.password
+    };
+
+    const updateData = {
+        password: req.body.newPassword
+    };
+
+    userHandler.logIn(userData, (result, err) => {
+        if (err) {
+            res.status(403).send("Wrong credentials!");
+            return;
+        }
+
+        userHandler.updateUser(result.userId, updateData, (result, err) => {
+            if (err) {
+                res.status(500).send("There was an internal error!");
+                return;
+            }
+
+            res.status(200).send("Password successfully updated!");
+        });
+    });
+};
+
+router.put('/:username', (req, res) => {
+    if (req.session.signedIn) {
+        putWithSession(req, res);
+    } else {
+        putWithoutSession(req, res);
+    }
 })
 
 module.exports = router;

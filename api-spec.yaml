@@ -88,6 +88,7 @@ paths:
           description: Forbidden - Wrong credentials
     post:
       summary: Create an account with the specified username and password
+      description: Also creates a session for that user (so you don't need to send a login request right afterwards)
       parameters:
         - name: username
           in: path
@@ -103,11 +104,7 @@ paths:
               $ref: '#/components/schemas/Password'
       responses:
         '201': 
-          description: Created - User successfully createdx 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserData'
+          description: Created - User successfully created 
         '400':
           description: Bad request - missing requestBody
         '409':
@@ -149,7 +146,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserData'
+              $ref: '#/components/schemas/UserDataUpdateRequest'
       responses:
         '200':
           description: OK - Successfully updated
@@ -166,7 +163,17 @@ components:
         password:
           type: string
           example: 'password123'
-
+    UserDataUpdateRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          description: the old password on the account
+          example: 'oldPassword123'
+        newPassword:
+          type: string
+          description: the new password for the account
+          example: 'newPassword123'
     UserData:
       type: object
       properties:
@@ -183,22 +190,10 @@ components:
           example: '1700458466'
         completedQuizes:
           type: array
+          description: a list of quizzes the user has taken along with results
           items:
-            $ref: '#/components/schemas/CompletedQuiz'
-        #Add image to list of properties later
-
-    UpdateUserData:
-      type: object
-      properties:
-        password:
-          type: string
-          example: 'oldPassword123'
-        newPassword:
-          type: string
-          example: 'newPassword123'
-        #Add image to list of properties later
-
-    CompletedQuiz:
+            $ref: '#/components/schemas/UserDataCompletedQuiz'
+    UserDataCompletedQuiz:
       type: object
       properties:
         quizId:
@@ -210,27 +205,61 @@ components:
           description: unix time (seconds since epoch)
           example: '1700458954'
         result:
-          $ref: '#/components/schemas/QuizResult'
+          $ref: '#/components/schemas/QuizDataResult'
 
-    QuizResult:
+    #Quizlet section
+    QuizletDataRequest:
       type: object
       properties:
+        userId:
+          type: string
+          description: uuid v4 prefixed with a 'u'
+          example: 'ubd002d37-e846-4152-9736-0f23baba5c34'
+    QuizletDataResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/QuizletData'
+      minItems: 9
+      maxItems: 9
+    QuizletData:
+      type: object
+      properties:
+        quizId:
+          type: string
         name:
           type: string
-          example: 'Hufflepuff'
+          description: name for the quiz
+          example: Harry Potter quiz
         description:
           type: string
-          example: 'Congrats you''re a normie!'
+          description: description for the quiz
+          example: This is a basic quiz to find out what Harry Potter house you're in
+        dateCreated:
+          type: integer
+          description: unix time (seconds since epoch)
+          example: 1700633678
+        creator:
+          type: string
+          description: userId of the creator of the quiz. uuid v4 prefixed with a 'u'
+          example: 'ufa32357f-b118-47cc-a9dd-d0e831c2a6a9'
+        taken:
+          type: boolean
+          description: false if the user hasn't taken the quiz before, and vice versa
+          example: false
+        submissions:
+          type: integer
+          description: the number of times the quiz has been taken
+          example: 126
 
-    QuizRequest:
+    #Quiz section
+    QuizDataRequest:
       type: object
       properties:
         quizId:
           type: string
           description: uuid v4 prefixed with a 'q'
-          example: 'q57f71583-7e73-4a22-b7fc-4b95b4a6de84'
-    
-    Quiz:
+          example: 'qb78b21e7-8b87-4578-9366-c9936ebdca08'
+    QuizDataResponse:
       type: object
       properties:
         id:
@@ -256,28 +285,46 @@ components:
         questions:
           type: array
           items:
-            $ref: '#/components/schemas/QuizQuestion'
+            $ref: '#/components/schemas/QuizDataQuestion'
         results:
           type: array
           items:
-            $ref: '#/components/schemas/QuizResult'
-
-    QuizQuestion:
+            $ref: '#/components/schemas/QuizDataResult'
+    QuizDataQuestion:
       type: object
       properties:
         prompt:
           type: string
+          description: the question that the quiz is asking
+          example: What is your favorite color?
         answers:
           type: array
+          description: a list of answers with a linked result and weight
           items:
-            $ref: '#/components/schemas/QuizAnswer'
-
-    QuizAnswer:
+            $ref: '#/components/schemas/QuizDataAnswer'
+    QuizDataAnswer:
       type: object
       properties:
         option:
           type: string
+          description: the actual choice the user sees and clicks on
+          example: Red
         result:
           type: integer
+          description: the result that the answer corresponds with
+          example: Gryffindor
         weight:
           type: integer
+          description: the weight that gets added to the result
+          example: 14
+    QuizDataResult:
+      type: object
+      properties:
+        name:
+          type: string
+          description: the name of the result
+          example: 'Hufflepuff'
+        description:
+          type: string
+          description: a description of the result
+          example: 'Congrats you''re a normie!'
