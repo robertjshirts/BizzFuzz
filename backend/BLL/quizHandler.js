@@ -84,15 +84,15 @@ const getNewQuizzes = async (userId, callback) => {
  */
 const deleteUserQuiz = (userId, quizId, callback) => {
     // the user id is for if we add quizzes to the user object if we decide against it I will remove it
-    data.deleteQuiz(quizId, (result,err)=>{
+    data.deleteQuiz(quizId, userId, (result,err)=>{
         callback(result,err)
     })
 }
 
 /**
- * deletes a quiz that a user has created using the userid and the quizid
+ * add quiz result data to the user object
  * 
- * @param {String} userId the id of the user that created the quiz
+ * @param {String} userId the id of the user that took the quiz
  * @param {JSON} resutlObj the result obj of the quiz completed by the user
  * @param {function(result, err)} callback result = {
   acknowledged: BOOLEAN,
@@ -137,10 +137,22 @@ const createQuiz = (userId, quizInfo, callback) =>{
     })
 }
 
+/**
+ * returns a quiz by ID
+ * 
+ * @param {String} quizId the id of the quiz to be recieved
+ * @param {function(result,err)} callback result=quizObj
+ */
+const getQuiz = (quizId,callback)=> {
+    data.getQuiz(quizId,(result,err)=>{
+        callback(result,err)
+    })
+}
 
 module.exports = {
     getNewQuizzes: getNewQuizzes,
     deleteUserQuiz: deleteUserQuiz,
     postUserQuizResults: postUserQuizResults,
-    createQuiz: createQuiz
+    createQuiz: createQuiz,
+    getQuiz: getQuiz
 }

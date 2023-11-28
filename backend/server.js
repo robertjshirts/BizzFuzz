@@ -13,9 +13,13 @@ app.use(session({
     cookie: { secure: false } 
 }));
 
+const quizletsRouter = require('./routes/quizletsRouter');
+const quizzesRouter = require('./routes/quizzesRouter');
 const sessionsRouter = require('./routes/sessionsRouter');
 const usersRouter = require('./routes/usersRouter');
 
+app.use('/quizlets', quizletsRouter);
+app.use('/quizzes', quizzesRouter);
 app.use('/sessions', sessionsRouter);
 app.use('/users', usersRouter);
 
