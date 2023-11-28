@@ -2,7 +2,7 @@ const {MongoClient} = require('mongodb')
 const { v4: uuidv4 } = require('uuid')
 const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=bizz-fuzz-db'
 
-const userTable = 'users'
+const userTable = 'test'
 const quizTable = 'test'
 const BizzFuzz = 'bizzfuzztest'
 
@@ -80,13 +80,12 @@ const read = async (identifier, table, callback) => {
  * @param {string} table - The table (collection) where the document resides.
  * @param {Function} callback - Callback function to handle the result.
  */
-const update = async (identifier, change, table, callback) => {
+const update = async (identifier, change, table, appending, callback) => {
     executeQuery(async (database) => {
         collection = database.collection(table)
-        let updateChange = {
-            ...change,
-            $set: { ...change.$set, lastUpdated: Date.now() }
-        }
+        let updateChange = appending ? {$push: {...change.$push}} : {$set: {...change.$set}}
+        updateChange.$set = {...updateChange.$set, lastUpdated: Date.now()}
+        
         let result = await collection.updateOne(identifier, updateChange)
         callback(result, null)
     }, callback)
@@ -113,6 +112,12 @@ const search = (filter, numberOfItems, table, callback) => {
         console.log(result)
         callback(result, null)
     }, callback)
+}
+
+const searchType = (filter, type, numberOfItems, table, callback) => {
+    if(type = "mostPopular"){
+        
+    }
 }
 
 /**
@@ -185,7 +190,7 @@ const updateUser = (userID, changeData, callback) => {
         updateData = {
             $set: changeData 
         }
-        update({_id : userID}, updateData, userTable, callback)
+        update({_id : userID}, updateData, userTable, false, callback)
     } catch(err){
         callback(null, err)
         console.trace(err)
@@ -197,12 +202,19 @@ const updateUser = (userID, changeData, callback) => {
  * @param {Object} quizInfo The quiz object
  * @param {function} callback returns (result, err)
  */
-const createQuiz = (quizInfo, callback) => {
+const createQuiz = (quizInfo, userID, callback) => {
     try{
-        create(quizInfo, quizTable, callback)
+        create(quizInfo, quizTable, (result, err) => {
+            if(err !== null){
+                callback(null, err)
+            } else {
+                userChange = {completedQuizzes : result.insertedId}
+                change = {$push : userChange}
+                update({_id : userID}, change, userTable, true, callback)
+            }
+        })
     } catch(err){
         callback(null, err)
-        console.trace(err)
     }
 }
 
@@ -215,9 +227,9 @@ const createQuiz = (quizInfo, callback) => {
 const postQuiz = (userID, quizResult, callback) => {
     try{
         appendedData = {
-            $push:{completedQuizzes: quizResult} 
+            $push : {completedQuizzes: quizResult}
         }
-        update({_id : userID}, appendedData, userTable, callback)
+        update({_id : userID}, appendedData, userTable, true, callback)
     } catch(err){
         callback(null, err)
     }
@@ -243,7 +255,7 @@ const getQuiz = (quizID, callback) => {
  */
 const getQuizlets = (quizIDs, callback) => {
     try{
-        search({_id : {$in : quizIDs}}, 9, quizTable, callback)
+        search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
     } catch(err){
         callback(null, err)
     }
@@ -267,7 +279,7 @@ const updateQuiz = (quizID, changeData, callback) => {
         updateData = {
             $set: changeData 
         }
-        update({_id: quizID}, updateData, quizTable, callback)
+        update({_id: quizID}, updateData, quizTable, false, callback)
     } catch(err) {
         callback(null, err)
     }
