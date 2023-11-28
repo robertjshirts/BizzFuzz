@@ -127,6 +127,7 @@ const postUserQuizResults = (userId,resultObj, callback) =>{
  * @param {function(result,err)} callback result =
  */
 const createQuiz = (userId, quizInfo, callback) =>{
+    quizInfo.submissions = 0;
     data.createQuiz(quizInfo,userId,(result,err)=>{
         if(err){
             callback(null,err)
