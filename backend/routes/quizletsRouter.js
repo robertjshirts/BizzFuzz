@@ -5,11 +5,12 @@ const { validateQuizletGet } = require('../validation/quizletValidation');
 
 
 router.get('/', validateQuizletGet, (req, res) => {
-    quizHandler.getNewQuizzes(req.body.userId, (result, err) => { //Named oddly, really gets new quizlets
+    quizHandler.getNewQuizzes(req.body.userId, (result, err) => {
         if (err) {
             return res.status(500).send("There was an internal error!");
         }
-        // TODO: this
+
+        return res.status(200).send(result);
     });
 });
 

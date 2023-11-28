@@ -1,28 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const quizHandler = require('../BLL/quizHandler');
-const { validateQuizPost, validateQuizGet } = require('../validation/quizValidation');
+const { validateQuizPost, validateQuizGet, validateQuizDelete } = require('../validation/quizValidation');
+
+const postWithSession = (req, res) => {
+    quizHandler.createQuiz(req.body.creator, req.body, (result, err) => {
+        if (err) {
+            return res.status(500).send("There was an internal error!");
+        }
+
+        return res.status(201).send("Quiz successfully created!");
+    });
+};
+
+const postWithoutSession = (req, res) => {
+    return res.status(401).send("You are not logged in!");
+};
 
 
 router.post('/', validateQuizPost, (req, res) => {
-    //TODO: this (BLL integration)
+    if (req.session.signedIn) {
+        postWithSession(req, res);
+    } else {
+        postWithoutSession(req, res);
+    }
 });
 
 const deleteWithSession = (req, res) => {
     quizHandler.deleteUserQuiz(req.session.userId, req.body.quizId, (result, err) => {
         if (err) {
-            return res.status(403).send("Wrong credentials!"); // Kind of vague but it means that your userId and the userId on the quizId passed in don't match. Basically the client doesn't have access to delete the quiz
+            return res.status(403).send("Wrong credentials!");
         }
 
         return res.status(204).send();
-    })
+    });
 };
 
 const deleteWithoutSession = (req, res) => {
     return res.status(401).send("You are not logged in!")
 };
 
-router.delete('/', (req, res) => {
+router.delete('/', validateQuizDelete, (req, res) => {
     if (req.session.signedIn) {
         deleteWithSession(req, res);
     } else {
@@ -31,7 +49,13 @@ router.delete('/', (req, res) => {
 });
 
 router.get('/', validateQuizGet, (req, res) => {
-    //TODO: this (BLL integration)
+    quizHandler.getQuiz(req.body.quizId, (result, err) => {
+        if (err) {
+            return res.status(404).send("No quiz with that id!");
+        }
+
+        return res.status(200).send(result);
+    })
 })
 
 module.exports = router;
