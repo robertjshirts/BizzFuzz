@@ -101,6 +101,7 @@ const getUserData = (userId, callback) => {
             return;
         }
         delete result.password
+        
         callback(result, null)
     })
 
