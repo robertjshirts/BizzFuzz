@@ -124,7 +124,13 @@ const postUserQuizResults = (userId,resultObj, callback) =>{
  * 
  * @param {*} userId the id of the user that created the quiz
  * @param {*} quizInfo the full quiz object 
- * @param {function(result,err)} callback result =
+ * @param {function(result,err)} callback result = {
+  acknowledged: BOOLEAN,
+  modifiedCount: INT,
+  upsertedId: null,
+  upsertedCount: INT,
+  matchedCount: INT
+}
  */
 const createQuiz = (userId, quizInfo, callback) =>{
     quizInfo.submissions = 0;
@@ -137,10 +143,21 @@ const createQuiz = (userId, quizInfo, callback) =>{
     })
 }
 
+/**
+ * returns a quiz from the DB based off of its ID
+ * @param {String} quizId the _id of the quiz that is to be returned
+ * @param {function(result,err)} callback result = quiz obj
+ */
+const getQuiz = (quizId,callback) =>{
+data.getQuiz(quizId,(result,err)=>{
+    callback(result,err)
+})
+}
 
 module.exports = {
     getNewQuizzes: getNewQuizzes,
     deleteUserQuiz: deleteUserQuiz,
     postUserQuizResults: postUserQuizResults,
-    createQuiz: createQuiz
+    createQuiz: createQuiz,
+    getQuiz: getQuiz
 }
