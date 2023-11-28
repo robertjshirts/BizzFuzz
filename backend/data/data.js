@@ -307,7 +307,7 @@ const updateQuiz = (quizID, changeData, callback) => {
         updateData = {
             $set: changeData 
         }
-        update({_id: quizID}, updateData, quizTable, false, callback)
+        update({_id: quizID}, updateData, quizTable, 1, callback)
     } catch(err) {
         callback(null, err)
     }
