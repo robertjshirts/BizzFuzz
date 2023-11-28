@@ -223,7 +223,6 @@ const updateUser = (userID, changeData, callback) => {
  * @param {function} callback returns (result, err)
  */
 const createQuiz = (quizInfo, userID, callback) => {
-const createQuiz = (quizInfo, userID, callback) => {
     try{
         create(quizInfo, quizTable, (result, err) => {
             if(err !== null){
