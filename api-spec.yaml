@@ -314,7 +314,7 @@ paths:
               schema:
                 type: string
     delete:
-      summary: delete a quiz with quizId from a user with userId. Requires a session (login)
+      summary: delete a quiz with quizId. Requires a session with the creator of the quiz (login)
       requestBody:
         required: true
         content:
@@ -546,7 +546,7 @@ components:
     QuizDeleteRequest:
       type: object
       properties:
-        userId:
+        quizId:
           type: string
-          description: uuid v4 prefixed with a 'u'
-          example: 'ubd002d37-e846-4152-9736-0f23baba5c34'
+          description: uuid v4 prefixed with a 'q'
+          example: 'qbd002d37-e846-4152-9736-0f23baba5c34'

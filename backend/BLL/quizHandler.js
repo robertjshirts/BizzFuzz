@@ -84,7 +84,7 @@ const getNewQuizzes = async (userId, callback) => {
  */
 const deleteUserQuiz = (userId, quizId, callback) => {
     // the user id is for if we add quizzes to the user object if we decide against it I will remove it
-    data.deleteQuiz(quizId, (result,err)=>{
+    data.deleteQuiz(quizId, userId, (result,err)=>{
         callback(result,err)
     })
 }

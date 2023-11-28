@@ -16,8 +16,7 @@ const questionSchema = Joi.object({
 // Results inside of quiz
 const resultSchema = Joi.object({
     name: Joi.string().required(),
-    description: Joi.string().required(),
-    image: Joi.string().required() // assuming base64 encoded image string
+    description: Joi.string().required()
 });
 
 // Full object
