@@ -1,5 +1,6 @@
 // This comment is a placehoder
 
+const { userInfo } = require('os')
 const dal = require('..\\backend\\data\\data.js')
 
 const quiz = {
@@ -8,8 +9,8 @@ const quiz = {
 }
 
 const user = {
-    "username": "Bob",
-    "password": "password123"
+    "username" : "TestUser",
+    "password" : "password123"
 }
 
 const findUser = (id) => {
@@ -104,4 +105,5 @@ arrayOfQuiz = ['q9366e7dd-0fa2-4b68-9250-3eb03b1867f7','q9c33c0fd-56e5-4975-a067
 //getQuizlets(arrayOfQuiz)
 deleteQuiz("uc8faa693-54ed-46ec-81f8-06bea4d86016", 'u07c309cd-3b32-4208-a5a5-0fd7eb494017')
 //updateQuiz("qecd0f1d5-f16b-430e-a188-35f586fef15d")
+//createUser(user)
 

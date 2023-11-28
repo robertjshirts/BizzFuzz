@@ -138,6 +138,12 @@ const search = (filter, numberOfItems, table, callback) => {
     }, callback)
 }
 
+const searchType = (filter, type, numberOfItems, table, callback) => {
+    if(type = "mostPopular"){
+        
+    }
+}
+
 /**
  * Creates a new user.
  * @param {Object} userInfo - The information about the user to be created.
@@ -217,6 +223,7 @@ const updateUser = (userID, changeData, callback) => {
  * @param {function} callback returns (result, err)
  */
 const createQuiz = (quizInfo, userID, callback) => {
+const createQuiz = (quizInfo, userID, callback) => {
     try{
         create(quizInfo, quizTable, (result, err) => {
             if(err !== null){
@@ -241,7 +248,7 @@ const createQuiz = (quizInfo, userID, callback) => {
 const postQuiz = (userID, quizResult, callback) => {
     try{
         appendedData = {
-            $push:{completedQuizzes: quizResult} 
+            $push : {completedQuizzes: quizResult}
         }
         update({_id : userID}, appendedData, userTable, 2, callback)
     } catch(err){
@@ -269,6 +276,7 @@ const getQuiz = (quizID, callback) => {
  */
 const getQuizlets = (quizIDs, callback) => {
     try{
+        search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
         search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
     } catch(err){
         callback(null, err)
@@ -300,7 +308,7 @@ const updateQuiz = (quizID, changeData, callback) => {
         updateData = {
             $set: changeData 
         }
-        update({_id: quizID}, updateData, quizTable, callback)
+        update({_id: quizID}, updateData, quizTable, false, callback)
     } catch(err) {
         callback(null, err)
     }
