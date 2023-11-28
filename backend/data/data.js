@@ -78,6 +78,7 @@ const read = async (identifier, table, callback) => {
  * @param {Object} identifier - The query to identify the document to update.
  * @param {Object} change - The changes to apply to the document.
  * @param {string} table - The table (collection) where the document resides.
+ * @param {number} updateType - The type of update that you would use to update different things. (Ex. 1 = $set)
  * @param {Function} callback - Callback function to handle the result.
  */
 const update = async (identifier, change, table, updateType, callback) => {
@@ -129,20 +130,22 @@ const remove = async (identifier, table, callback) => { // called rmeoved becaus
     }, callback)
 }
 
-const search = (filter, numberOfItems, table, callback) => {
+/**
+ * search function
+ * @param {Object} filter - the thing that you are looking for (Ex. {quizName : "test quiz"})
+ * @param {number} numberOfItems - the number of documents that are returned
+ * @param {number} pageNumber - the page number
+ * @param {*} table 
+ * @param {*} callback 
+ */
+const search = (filter, numberOfItems, pageNumber, table, callback) => {
     executeQuery(async (database) => {
         collection = database.collection(table)
-        let result = await collection.find(filter).limit(numberOfItems).toArray()
-        console.log(result)
+        let result = await collection.find(filter).sort({submissions : -1}).limit(numberOfItems).skip((pageNumber-1)*numberOfItems).toArray()
         callback(result, null)
     }, callback)
 }
 
-const searchType = (filter, type, numberOfItems, table, callback) => {
-    if(type = "mostPopular"){
-        
-    }
-}
 
 /**
  * Creates a new user.
@@ -273,10 +276,9 @@ const getQuiz = (quizID, callback) => {
  * @param {Array} quizIDs an array of quiz ids of the quizzes you want to find
  * @param {function} callback callback function
  */
-const getQuizlets = (quizIDs, callback) => {
+const getQuizlets = (quizIDs, pageNumber, callback) => {
     try{
-        search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
-        search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
+        search({_id : {$nin : quizIDs}}, 9, pageNumber, quizTable, callback)
     } catch(err){
         callback(null, err)
     }
