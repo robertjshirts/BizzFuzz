@@ -6,7 +6,7 @@ const path = require('path');
 const getWithSession = (req, res) => {
     userHandler.getUserData(req.session.userId, (result, err) => {
         if (err) {
-            res.status(500).send({ err: err });
+            res.status(500).send("There was an internal error!");
             return;
         }
         res.status(200).send(result);
@@ -27,13 +27,13 @@ const getWithoutSession = (req, res) => {
 
     userHandler.logIn(userData, (result, err) => {
         if (err) {
-            res.status(403).send();
+            res.status(403).send("Wrong credentials!");
             return;
         }
 
         userHandler.getUserData(result.userId, (result, err) => {
             if (err) {
-                res.status(500).send();
+                res.status(500).send("There was an internal error!");
                 return;
             }
             res.status(200).send(result);
@@ -80,7 +80,7 @@ router.post('/:username', (req, res) => {
 
 const deleteWithSession = (req, res) => {
     if (req.session.username !== req.params.username) {
-        res.status(403).send("Not logged into correct account!");
+        res.status(403).send("Wrong credentials!");
         return;
     }
 
@@ -137,7 +137,7 @@ router.delete('/:username', (req, res) => {
 
 const putWithSession = (req, res) => {
     if (req.params.username !== req.session.username) {
-        res.status(403).send("Not logged into correct account!");
+        res.status(403).send("Wrong credentials!");
         return;
     }
 

@@ -2,9 +2,9 @@ const {MongoClient} = require('mongodb')
 const { v4: uuidv4 } = require('uuid')
 const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=bizz-fuzz-db'
 
-const userTable = 'test'
-const quizTable = 'test'
-const BizzFuzz = 'bizzfuzztest'
+const userTable = 'users'
+const quizTable = 'quizzes'
+const BizzFuzz = 'bizzfuzz'
 
 /**
  * Executes a MongoDB query.

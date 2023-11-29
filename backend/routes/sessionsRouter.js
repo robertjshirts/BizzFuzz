@@ -15,7 +15,7 @@ router.post('/:username', (req, res) => {
 
     userHandler.logIn(userData, (result, err) => {
         if (err) {
-            res.status(403).send();
+            res.status(403).send("Wrong credentials!");
             return;
         }
 
@@ -24,15 +24,15 @@ router.post('/:username', (req, res) => {
         req.session.username = result.username;
         req.session.password = userData.password;
 
-        res.status(201).send();
+        res.status(201).send("Session successfully created");
     })
 });
 
 router.get('/:username', (req, res) => {
     if (req.session.username && req.session.username === req.params.username) {
-        res.status(200).send();
+        res.status(200).send("Session exists");
     } else {
-        res.status(404).send();
+        res.status(404).send("No session found");
     }
 });
 
