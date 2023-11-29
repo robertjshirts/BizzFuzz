@@ -82,35 +82,37 @@ const read = async (identifier, table, callback) => {
  * @param {Function} callback - Callback function to handle the result.
  */
 const update = async (identifier, change, table, updateType, callback) => {
+    switch(updateType){
+        case 1:
+            updateChange = {
+                $set: {
+                    ...change.$set
+                }
+            }
+            break
+        case 2:
+            updateChange = {
+                $push: {
+                    ...change.$push
+                }
+            }
+            break
+        case 3:
+            updateChange = {
+                $pull: {
+                    ...change.$pull
+                }
+            }
+            break
+    }
+    if (!updateChange.$set) {
+        updateChange.$set = {};
+    }
+    updateChange.$set.lastUpdated = Date.now()
+
     executeQuery(async (database) => {
         collection = database.collection(table)
-        switch(updateType){
-            case 1:
-                updateChange = {
-                    $set: {
-                        ...change.$set
-                    }
-                }
-                break
-            case 2:
-                updateChange = {
-                    $push: {
-                        ...change.$push
-                    }
-                }
-                break
-            case 3:
-                updateChange = {
-                    $pull: {
-                        ...change.$pull
-                    }
-                }
-                break
-        }
-        if (!updateChange.$set) {
-            updateChange.$set = {};
-        }
-        updateChange.$set.lastUpdated = Date.now()
+        
         let result = await collection.updateOne(identifier, updateChange)
         callback(result, null)
     }, callback)
@@ -132,16 +134,52 @@ const remove = async (identifier, table, callback) => { // called rmeoved becaus
 
 /**
  * search function
- * @param {Object} filter - the thing that you are looking for (Ex. {quizName : "test quiz"})
+ * @param {string || Object} filter - Search query. It can be a string (Ex. 'Star Wars') or it can be an object (Ex. {quizName : "test quiz"})
  * @param {number} numberOfItems - the number of documents that are returned
  * @param {number} pageNumber - the page number of the search
- * @param {string} table - the table thay you are trying to search in
+ * @param {number} searchType - the type of search that they are trying to get (Ex. 1 = Most Popular results)
  * @param {function} callback - the callabck function
  */
-const search = (filter, numberOfItems, pageNumber, table, callback) => {
+const search = (filter, numberOfItems, pageNumber, searchType, callback) => {
+    let sorting
+    if(typeof filter === "object"){
+        searching = filter
+    } else if (filter.trim() === ""){
+        searching = {}
+    } else {
+        searching = { $text : { $search : filter}}
+    }
+    
+    switch(searchType){
+        case 1: // Most Popular
+            sorting = {submissions : -1}
+            break
+        case 2: // Least Popular
+            sorting = {submissions : 1}
+            break
+        case 3: // newest
+            sorting = {dateCreated: -1}
+            break
+        case 4: // oldest
+            sorting = {dateCreate: 1}
+            break
+        case 5: //Most relevent
+            var projection = { score: { $meta: "textScore" } }
+            sorting = {score: { $meta: "textScore"}} 
+            break
+        default:
+            sorting = {submissions : -1}
+            break
+    }
+    
     executeQuery(async (database) => {
-        collection = database.collection(table)
-        let result = await collection.find(filter).sort({submissions : -1}).limit(numberOfItems).skip((pageNumber-1)*numberOfItems).toArray()
+        collection = database.collection(quizTable)
+        let query = collection.find(searching)
+
+        if (projection) {
+            query = query.project(projection)
+        }
+        let result = await query.sort(sorting).limit(numberOfItems).skip((pageNumber-1)*numberOfItems).toArray()
         callback(result, null)
     }, callback)
 }
@@ -279,7 +317,7 @@ const getQuiz = (quizID, callback) => {
  */
 const getQuizlets = (quizIDs, pageNumber, callback) => {
     try{
-        search({_id : {$nin : quizIDs}}, 9, pageNumber, quizTable, callback)
+        search({_id : {$nin : quizIDs}}, 9, pageNumber, 1, callback)
     } catch(err){
         callback(null, err)
     }
@@ -328,6 +366,7 @@ module.exports = {
     getQuiz: getQuiz,
     getQuizlets: getQuizlets,
     deleteQuiz: deleteQuiz,
-    updateQuiz: updateQuiz
+    updateQuiz: updateQuiz,
+    search: search
 }
 
