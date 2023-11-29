@@ -134,9 +134,9 @@ const remove = async (identifier, table, callback) => { // called rmeoved becaus
  * search function
  * @param {Object} filter - the thing that you are looking for (Ex. {quizName : "test quiz"})
  * @param {number} numberOfItems - the number of documents that are returned
- * @param {number} pageNumber - the page number
- * @param {*} table 
- * @param {*} callback 
+ * @param {number} pageNumber - the page number of the search
+ * @param {string} table - the table thay you are trying to search in
+ * @param {function} callback - the callabck function
  */
 const search = (filter, numberOfItems, pageNumber, table, callback) => {
     executeQuery(async (database) => {
@@ -205,8 +205,8 @@ const deleteUser = (userID, callback) => {
 
 /**
  * Updates a user's information.
- * @param {string} _id - The ID of the user to update.
- * @param {Object} changeData - The changes to apply to the user's information.
+ * @param {string} userID - The ID of the user to update.
+ * @param {Object} changeData - The changes to apply to the user's information. (Ex. {password : "newPassword"})
  * @param {Function} callback - Callback function to handle the result.
  */
 const updateUser = (userID, changeData, callback) => {
@@ -223,6 +223,7 @@ const updateUser = (userID, changeData, callback) => {
 /**
  * Adds a qiuz to the quiz database
  * @param {Object} quizInfo The quiz object
+ * @param {string} userID - The id of the user that is creating the quiz
  * @param {function} callback returns (result, err)
  */
 const createQuiz = (quizInfo, userID, callback) => {
@@ -247,7 +248,7 @@ const createQuiz = (quizInfo, userID, callback) => {
  * @param {Object} quizResult The quiz results
  * @param {function} callback returns (result, err)
  */
-const postQuiz = (userID, quizResult, callback) => {
+const createResult = (userID, quizResult, callback) => {
     try{
         appendedData = {
             $push : {completedQuizzes: quizResult}
@@ -260,7 +261,7 @@ const postQuiz = (userID, quizResult, callback) => {
 
 /**
  * Gets a single quiz from the quiz database
- * @param {string} quizID The id of the quiz you are looking fo rin the database
+ * @param {string} quizID The id of the quiz you are looking for in the database
  * @param {function} callback callback function
  */
 const getQuiz = (quizID, callback) => {
@@ -287,6 +288,7 @@ const getQuizlets = (quizIDs, pageNumber, callback) => {
 /**
  * deletes a quiz from the database
  * @param {string} quizID The id of the quiz that you want to delete
+ * @param {string} userID - the id of the creator of the quiz
  * @param {function} callback callback funciton
  */
 const deleteQuiz = (quizID, userID, callback) => {
@@ -322,7 +324,7 @@ module.exports = {
     updateUser: updateUser,
     getUserByUsername: getUserByUsername,
     createQuiz: createQuiz,
-    postQuiz: postQuiz,
+    createResult: createResult,
     getQuiz: getQuiz,
     getQuizlets: getQuizlets,
     deleteQuiz: deleteQuiz,
