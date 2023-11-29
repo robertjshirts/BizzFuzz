@@ -405,11 +405,15 @@ components:
           type: string
           description: uuid v4 prefixed with a 'u'
           example: 'ubd002d37-e846-4152-9736-0f23baba5c34'
+        page:
+          type: integer
+          description: the page number that you want (default should be 1)
+          example: 2
     QuizletDataResponse:
       type: array
       items:
         $ref: '#/components/schemas/QuizletData'
-      minItems: 9
+      minItems: 1
       maxItems: 9
     QuizletData:
       type: object
