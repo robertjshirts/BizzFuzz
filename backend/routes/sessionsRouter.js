@@ -4,8 +4,6 @@ const userHandler = require('../BLL/userHandler');
 const { validateSessionPost, validateSessionGet, validateSessionDelete } = require('../validation/sessionValidation');
 
 router.post('/:username', validateSessionPost, (req, res) => {
-
-
     const userData = {
         username: req.params.username,
         password: req.body.password
