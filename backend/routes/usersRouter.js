@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userHandler = require('../BLL/userHandler');
-const path = require('path');
+const { validateUserPost, validateUserGet, validateUserPut, validateUserDelete } = require('../validation/userValidation');
 
 const getWithSession = (req, res) => {
     userHandler.getUserData(req.session.userId, (result, err) => {
@@ -15,11 +15,6 @@ const getWithSession = (req, res) => {
 }
 
 const getWithoutSession = (req, res) => {
-    if (!req.body || !req.body.password) {
-        res.status(400).send("Missing password field in requestBody!");
-        return;
-    }
-
     const userData = {
         username: req.params.username,
         password: req.body.password
@@ -41,7 +36,7 @@ const getWithoutSession = (req, res) => {
     })
 }
 
-router.get('/:username', (req, res) => {
+router.get('/:username', validateUserGet, (req, res) => {
     if (req.session.signedIn) {
         getWithSession(req, res);
     } else {
@@ -49,12 +44,7 @@ router.get('/:username', (req, res) => {
     }
 });
 
-const postWithoutSession = (req, res) => {
-    if (!req.body || !req.body.password) {
-        res.status(400).send("Missing password field in requestBody!");
-        return;
-    }
-
+router.post('/:username', validateUserPost, (req, res) => {
     const userData = {
         username: req.params.username,
         password: req.body.password
@@ -62,8 +52,7 @@ const postWithoutSession = (req, res) => {
 
     userHandler.signUp(userData, (result, err) => {
         if (err) {
-            res.status(409).send("Username already in use!");
-            return;
+            return res.status(409).send("Username already in use!");
         }
 
         req.session.signedIn = true;
@@ -72,10 +61,6 @@ const postWithoutSession = (req, res) => {
         req.session.password = userData.password;
         res.status(201).send("User successfully created");
     })
-};
-
-router.post('/:username', (req, res) => {
-    postWithoutSession(req, res);
 });
 
 const deleteWithSession = (req, res) => {
@@ -127,7 +112,7 @@ const deleteWithoutSession = (req, res) => {
     })
 };
 
-router.delete('/:username', (req, res) => {
+router.delete('/:username', validateUserDelete, (req, res) => {
     if (req.session.signedIn) {
         deleteWithSession(req, res);
     } else {
@@ -138,11 +123,6 @@ router.delete('/:username', (req, res) => {
 const putWithSession = (req, res) => {
     if (req.params.username !== req.session.username) {
         res.status(403).send("Wrong credentials!");
-        return;
-    }
-
-    if (!req.body || req.body.newPassword) {
-        res.status(400).send("Missing newPassword field in requestBody!");
         return;
     }
 
@@ -160,12 +140,7 @@ const putWithSession = (req, res) => {
     }) 
 };
 
-const putWithoutSession = (req, res) => {
-    if (!req.body || !req.body.password || !req.body.newPassword) {
-        res.status(400).send("Missing password field or newPassword field in requestBody!");
-        return;
-    }
-    
+const putWithoutSession = (req, res) => {    
     const userData = {
         username: req.params.username,
         password: req.body.password
@@ -192,7 +167,7 @@ const putWithoutSession = (req, res) => {
     });
 };
 
-router.put('/:username', (req, res) => {
+router.put('/:username', validateUserPut, (req, res) => {
     if (req.session.signedIn) {
         putWithSession(req, res);
     } else {

@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const userHandler = require('../BLL/userHandler');
+const { validateSessionPost, validateSessionGet, validateSessionDelete } = require('../validation/sessionValidation');
 
-router.post('/:username', (req, res) => {
-    if (!req.body || !req.body.password) {
-        res.status(400).send("Missing password field in requestBody!");
-        return;
-    }
+router.post('/:username', validateSessionPost, (req, res) => {
+
 
     const userData = {
         username: req.params.username,
@@ -28,15 +26,15 @@ router.post('/:username', (req, res) => {
     })
 });
 
-router.get('/:username', (req, res) => {
-    if (req.session.username && req.session.username === req.params.username) {
+router.get('/:username', validateSessionGet, (req, res) => {
+    if (req.session.username === req.params.username) {
         res.status(200).send("Session exists");
     } else {
         res.status(404).send("No session found");
     }
 });
 
-router.delete('/:username', (req, res) => {
+router.delete('/:username', validateSessionDelete, (req, res) => {
     req.session.signedIn = false;
     req.session.userId = null;
     req.session.username = null;

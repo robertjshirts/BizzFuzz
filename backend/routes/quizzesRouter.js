@@ -27,7 +27,7 @@ router.post('/', validateQuizPost, (req, res) => {
 });
 
 const deleteWithSession = (req, res) => {
-    quizHandler.deleteUserQuiz(req.session.userId, req.body.quizId, (result, err) => {
+    quizHandler.deleteUserQuiz(req.session.userId, req.params.quizId, (result, err) => {
         if (err) {
             return res.status(403).send("Wrong credentials!");
         }
@@ -40,7 +40,7 @@ const deleteWithoutSession = (req, res) => {
     return res.status(401).send("You are not logged in!")
 };
 
-router.delete('/', validateQuizDelete, (req, res) => {
+router.delete('/:quizId', validateQuizDelete, (req, res) => {
     if (req.session.signedIn) {
         deleteWithSession(req, res);
     } else {
@@ -48,10 +48,13 @@ router.delete('/', validateQuizDelete, (req, res) => {
     }
 });
 
-router.get('/', validateQuizGet, (req, res) => {
-    quizHandler.getQuiz(req.body.quizId, (result, err) => {
+router.get('/:quizId', validateQuizGet, (req, res) => {
+    quizHandler.getQuiz(req.params.quizId, (result, err) => {
         if (err) {
-            return res.status(404).send("No quiz with that id!");
+            if (err === "No entity with that identifier exists!") {
+                return res.status(404).send("There is no quiz with that id!")
+            }
+            return res.status(500).send("There was an internal error");
         }
 
         return res.status(200).send(result);

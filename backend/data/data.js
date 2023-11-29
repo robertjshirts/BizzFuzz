@@ -69,6 +69,10 @@ const read = async (identifier, table, callback) => {
     await executeQuery(async (database) => {
         collection = database.collection(table)
         let result = await collection.findOne(identifier)
+        if (!result) {
+            callback(null, "No entity with that identifier exists!");
+            return;
+        }
         callback(result, null)
     }, callback)
 }
@@ -275,7 +279,6 @@ const getQuiz = (quizID, callback) => {
  */
 const getQuizlets = (quizIDs, callback) => {
     try{
-        search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
         search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
     } catch(err){
         callback(null, err)
