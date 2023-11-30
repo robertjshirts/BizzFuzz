@@ -355,6 +355,22 @@ const updateQuiz = (quizID, changeData, callback) => {
     }
 }
 
+// const updateResult = (userID, changedResults, callback) => {
+//     try{
+
+//         updateData ={
+//             $set: changedResults
+//         }
+//         update({_id : userID}, updateChange, userTable, 1, callback)
+//     } catch (err) {
+//         callback(null, err)
+//     }
+// }
+
+// const deleteResult = (userID, ) => {
+
+// }
+
 module.exports = {
     createUser: createUser,
     getUser: getUser,
