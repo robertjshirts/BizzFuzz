@@ -360,7 +360,6 @@ const updateQuiz = (quizID, changeData, callback) => {
 
 // const updateResult = (userID, changedResults, callback) => {
 //     try{
-
 //         updateData ={
 //             $set: changedResults
 //         }
@@ -369,7 +368,6 @@ const updateQuiz = (quizID, changeData, callback) => {
 //         callback(null, err)
 //     }
 // }
-
 // const deleteResult = (userID, ) => {
 
 // }
