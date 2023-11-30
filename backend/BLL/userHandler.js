@@ -16,9 +16,9 @@ const data = require('../data/data.js');
  */
 async function hashPassword(password) {
     let salt = bcrypt.genSaltSync(10);
-    let hash = bcrypt.hashSync(password,salt);
+    let hash = bcrypt.hashSync(password, salt);
     return hash;
-  }
+}
 
 /**
  * uses bcrypt to compare a new (unhashed) password to a hashed password
@@ -27,7 +27,7 @@ async function hashPassword(password) {
  * @param {Hash} storedPassword the hashed password stored in the database
  * @returns boolean showing true if both passwords match
  */
-async function comparePasswords(testPassword, storedPassword){
+async function comparePasswords(testPassword, storedPassword) {
     let isValid = bcrypt.compareSync(testPassword, storedPassword)
     return isValid
 }
@@ -42,18 +42,18 @@ async function comparePasswords(testPassword, storedPassword){
 const signUpUser = async (userJson, callback) => {
 
     userJson.password = await hashPassword(userJson.password)
-    data.createUser(userJson, (result, err)=>{
-        if(err){
-            callback(null,err)
+    data.createUser(userJson, (result, err) => {
+        if (err) {
+            callback(null, err)
             return;
         }
-        else{
-        let user = {
-            "userId": result.insertedId,
-            "username": userJson.username
+        else {
+            let user = {
+                "userId": result.insertedId,
+                "username": userJson.username
+            }
+            callback(user, null)
         }
-        callback(user,null)
-    }
     })
 
 }
@@ -64,22 +64,24 @@ const signUpUser = async (userJson, callback) => {
  * @param {UserJson} userJson the username and the password
  * @param {function(result,err)} callback passed function to handle the result and error outcome
  */
-const logInUser = (userJson, callback) =>{
+const logInUser = (userJson, callback) => {
 
-    userStoredData = data.getUserByUsername(userJson.username, async (result,err)=>{
-        if(err){
-            callback(null,err)
+    userStoredData = data.getUserByUsername(userJson.username, async (result, err) => {
+        if (err) {
+            callback(null, err)
             return;
         }
-        
-        if(await comparePasswords(userJson.password,result.password)){
+        let comp = await comparePasswords(userJson.password, result.password)
+        //console.log(comp)
+        if (comp) {
             let user = {
                 "userId": result._id,
                 "username": result.username
             }
-            callback(user,null)
-        }else{
-            callback(null,'wrong username/password')
+            callback(user, null)
+            return;
+        } else {
+            callback(null, 'wrong username/password')
         }
 
     })
@@ -96,11 +98,15 @@ const logInUser = (userJson, callback) =>{
 const getUserData = (userId, callback) => {
 
     userData = data.getUser(userId, (result, err) => {
-        if (err) {
-            callback(null, (err))
-            return;
+        try {
+            if (err) {
+                callback(null, (err))
+                return;
+            }
+            delete result.password
+        } catch (error) {
+            callback(null, error)
         }
-        delete result.password
         callback(result, null)
     })
 
@@ -113,17 +119,17 @@ const getUserData = (userId, callback) => {
  * @param {Json} newData Json object that holds all fields that wish to be changed and the new values
  * @param {function(result,err)} callback passed function to handle the result and error outcome
  */
-const updateUser = async (userId, newData, callback)=>{
-    if(newData.password){
+const updateUser = async (userId, newData, callback) => {
+    if (newData.password) {
         newData.password = await hashPassword(newData.password)
     }
-    data.updateUser(userId,newData, (result,err)=>{
-        
-        if(err){
-            callback(null,err)
+    data.updateUser(userId, newData, (result, err) => {
+
+        if (err) {
+            callback(null, err)
             return;
         }
-        callback(result,null)
+        callback(result, null)
     })
 
 }
@@ -135,23 +141,22 @@ const updateUser = async (userId, newData, callback)=>{
  * @param {String} UserId the id of the user object that is to be deleted
  * @param {function(result,err)} callback passed function to handle the result and error outcome
  */
-const deleteUser = (UserId, callback)=>{
-    data.deleteUser(UserId,(result,err)=>{
-        if(err){
-            callback(null,(err))
+const deleteUser = (UserId, callback) => {
+    data.deleteUser(UserId, (result, err) => {
+        if (err) {
+            callback(null, (err))
             return;
         }
-        callback(result,null)
+        callback(result, null)
     })
 
 }
 
 
 module.exports = {
-   logIn: logInUser,
-   signUp: signUpUser,
-   updateUser: updateUser,
-   deleteUser: deleteUser,
-   getUserData: getUserData
+    logIn: logInUser,
+    signUp: signUpUser,
+    updateUser: updateUser,
+    deleteUser: deleteUser,
+    getUserData: getUserData
 }
-
