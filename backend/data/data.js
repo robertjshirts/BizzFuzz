@@ -386,3 +386,4 @@ module.exports = {
     updateQuiz: updateQuiz,
     search: search
 }
+
