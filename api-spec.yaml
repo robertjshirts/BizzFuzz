@@ -352,7 +352,61 @@ paths:
             text/plain:
               schema:
                 type: string
-
+  /results:
+    get:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultGetRequest'
+      responses:
+        '400': 
+          description: Bad request - There was an issue with the request body
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Not authenticated - You need to be logged in to see your results
+          content:
+            text/plain:
+              schema:
+                type: string
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultPostRequest'
+      responses:
+        '400': 
+          description: Bad request - There was an issue with the request body
+          content:
+            text/plain:
+              schema:
+                type: string
+    delete:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultDeleteRequest'
+      responses:
+        '400':
+          description: Bad request - There was an issue with the request body
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Not authenticated - You need to be logged in to delete a result
+          content:
+            text/plain:
+              schema:
+                type: string
 
 components: 
   schemas:
@@ -565,3 +619,35 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QuizDataResult'
+
+    #Result GET Section
+    ResultGetRequest:
+      type: object
+      properties:
+        quizId:
+          type: string
+          description: The quizId for the result (requires a session)
+          example: 'qff8045f9-0975-4ca1-ba91-32313a28b6e3'
+
+    #Result POST section
+    ResultPostRequest:
+      type: object
+      properties:
+        quizId:
+          type: string
+          description: The quizId of the quiz that was taken
+          example: 'q6884c8fe-56b7-469b-847e-f639c40e3af5'
+        answers:
+          type: array
+          description: The list of answers that the user selected
+          items:
+            $ref: '#/components/schemas/QuizDataAnswer'
+      
+    #Result DELETE section
+    ResultDeleteRequest:
+      type: object
+      properties:
+        quizId:
+          type: string
+          description: The quizId that identifies the quiz with the result to be deleted (requires a session)
+          example: 'q6884c8fe-56b7-469b-847e-f639c40e3af5'

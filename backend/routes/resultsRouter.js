@@ -12,13 +12,14 @@ const authenticate = (req, res, next) => {
 }
 
 const authorize = (req, res, next) => {
-    if (req.session.userId != req.body.userId) {
-        return res.status(403).send("Signed into wrong account!");
+    if (!req.session.signedIn && req.body.userId !== -1) {
+        res.status(403).send("")
     }
+
     next();
 }
 
-router.post('', validateResultGet, authorize, (req, res) => {
+router.post('', validateResultGet, (req, res) => {
 
 })
 
