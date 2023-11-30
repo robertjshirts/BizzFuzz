@@ -43,6 +43,8 @@ const updateResult = (userId, resultId, callback) => {
 
 }
 
+
+
 /**
  * Gets a result for a user and quiz.
  *
