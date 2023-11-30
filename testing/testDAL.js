@@ -21,7 +21,7 @@ const findUser = (id) => {
 }
 
 const userTakesQuiz = (id, quizInfo) => {
-    dal.postQuiz(id, quizInfo, (result, err) => {
+    dal.createResult(id, quizInfo, (result, err) => {
         if(err !== null){
             console.log(err)
         } else {
@@ -115,18 +115,41 @@ const updateResult = (userID, quizID) => {
     })
 }
 
+const readResult = (userID, quizID) => {
+    dal.readResult(userID, quizID, (result, err) => {
+        if(err !== null){
+            console.log(err)
+        } else {
+            console.log(result)
+        }
+    })
+}
+
+const deleteResult = (userID, quizID) => {
+    dal.deleteResult(userID, quizID, (result, err) => {
+        if(err !== null){
+            console.log(err)
+        } else {
+            console.log(result)
+        }
+    })
+}
+
 
 arrayOfQuiz = ['q9366e7dd-0fa2-4b68-9250-3eb03b1867f7','q9c33c0fd-56e5-4975-a067-4b3b974f7e3e']
 
 //createUser(user)
-findUser("ud0382936-d4af-447f-b2a8-e110b4d9e7ee")
+//findUser("ud0382936-d4af-447f-b2a8-e110b4d9e7ee")
 //userTakesQuiz("u98c7df55-afb6-40c3-b6d6-56e30c55799e", quiz)
 //createQuiz(quiz, 'u07c309cd-3b32-4208-a5a5-0fd7eb494017')
-//getQuiz("q992b90a9-5733-450f-bbe5-742f79bdd0a5")
+//getQuiz("qe0cb6ef5-5e4f-4765-9e25-45d32ec50ecd")
 //getQuizlets(arrayOfQuiz, 2)
 //deleteQuiz("uc8faa693-54ed-46ec-81f8-06bea4d86016", 'u07c309cd-3b32-4208-a5a5-0fd7eb494017')
 //updateQuiz("qecd0f1d5-f16b-430e-a188-35f586fef15d")
 //createUser(user)
 //search('ultimate quiz')
 //updateResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
+//readResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
+deleteResult('u3d8f66a0-bbb5-40f7-acdb-e4ee9b7f8b4c', 'qe0cb6ef5-5e4f-4765-9e25-45d32ec50ecd')
+
 

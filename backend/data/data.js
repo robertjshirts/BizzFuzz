@@ -65,10 +65,10 @@ const create = async (data, table, callback) => {
  * @param {string} table - The table (collection) from which to read the document.
  * @param {Function} callback - Callback function to handle the result.
  */
-const read = async (identifier, table, callback) => {
+const read = async (identifier, table, callback, projection = {}) => {
     await executeQuery(async (database) => {
         collection = database.collection(table)
-        let result = await collection.findOne(identifier)
+        let result = await collection.findOne(identifier, projection)
         callback(result, null)
     }, callback)
 }
@@ -369,7 +369,7 @@ const updateQuiz = (quizID, changeData, callback) => {
  */
 const readResult = (userID, quizID, callback) => {
     try {
-        read({_id: userID, "completedQuizzes.quizId": quizID}, userTable, callback)
+        read({_id: userID, "completedQuizzes.quizId": quizID}, userTable, callback, {projection : {"completedQuizzes.$": 1}})
     } catch (err) {
         callback(null, err)
     }
@@ -395,13 +395,15 @@ const updateResult = (userID, quizID, changedResults, callback) => {
 
 /**
  * deletes the completed 
- * @param {*} userID 
- * @param {*} quizID 
- * @param {*} callback 
+ * @param {string} userID - The id of the user
+ * @param {function} callback - The callback funciton
  */
-const deleteResult = (userID, quizID, callback) => {
+const deleteResult = (userID, callback) => {
     try{
-        remove({_id: userID, "completedQuizzes.quizId": quizID}, userTable, callback)
+        updateData = {
+            $pull: { "completedQuizzes": {"quizId": quizID}}
+        }
+        update({_id: userID}, updateData, userTable, 3, callback)
     } catch (err) {
         callback(null, err)
     }
