@@ -4,7 +4,7 @@ const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.
 
 const userTable = 'users'
 const quizTable = 'quizzes'
-const BizzFuzz = 'bizzfuzztest'
+const BizzFuzz = 'bizzfuzz'
 
 /**
  * Executes a MongoDB query.
