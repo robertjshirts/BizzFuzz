@@ -175,7 +175,6 @@ const search = (filter, numberOfItems, pageNumber, searchType, callback) => {
     executeQuery(async (database) => {
         collection = database.collection(quizTable)
         let query = collection.find(searching)
-
         if (projection) {
             query = query.project(projection)
         }
