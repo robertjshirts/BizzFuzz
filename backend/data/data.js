@@ -4,7 +4,7 @@ const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.
 
 const userTable = 'users'
 const quizTable = 'quizzes'
-const BizzFuzz = 'bizzfuzz'
+const BizzFuzz = 'bizzfuzztest'
 
 /**
  * Executes a MongoDB query.
@@ -104,6 +104,12 @@ const update = async (identifier, change, table, updateType, callback) => {
                 }
             }
             break
+        case 4: 
+            updateChange = {
+                $unset: {
+                    ...change.$unset
+                }
+            }
     }
     if (!updateChange.$set) {
         updateChange.$set = {};
@@ -401,9 +407,9 @@ const updateResult = (userID, quizID, changedResults, callback) => {
 const deleteResult = (userID, callback) => {
     try{
         updateData = {
-            $pull: { "completedQuizzes": {"quizId": quizID}}
+            $unset: { "completedQuizzes": ""}
         }
-        update({_id: userID}, updateData, userTable, 3, callback)
+        update({_id: userID}, updateData, userTable, 4, callback)
     } catch (err) {
         callback(null, err)
     }

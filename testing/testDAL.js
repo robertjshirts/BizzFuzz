@@ -125,8 +125,8 @@ const readResult = (userID, quizID) => {
     })
 }
 
-const deleteResult = (userID, quizID) => {
-    dal.deleteResult(userID, quizID, (result, err) => {
+const deleteResult = (userID) => {
+    dal.deleteResult(userID, (result, err) => {
         if(err !== null){
             console.log(err)
         } else {
@@ -150,6 +150,6 @@ arrayOfQuiz = ['q9366e7dd-0fa2-4b68-9250-3eb03b1867f7','q9c33c0fd-56e5-4975-a067
 //search('ultimate quiz')
 //updateResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
 //readResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
-deleteResult('u3d8f66a0-bbb5-40f7-acdb-e4ee9b7f8b4c', 'qe0cb6ef5-5e4f-4765-9e25-45d32ec50ecd')
+deleteResult('u91df3a75-20c8-4789-be46-63abfbf1bc81')
 
 
