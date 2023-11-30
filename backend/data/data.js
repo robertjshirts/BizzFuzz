@@ -133,7 +133,7 @@ const search = (filter, numberOfItems, table, callback) => {
     executeQuery(async (database) => {
         collection = database.collection(table)
         let result = await collection.find(filter).limit(numberOfItems).toArray()
-        console.log(result)
+        //console.log(result)
         callback(result, null)
     }, callback)
 }
@@ -275,7 +275,6 @@ const getQuiz = (quizID, callback) => {
  */
 const getQuizlets = (quizIDs, callback) => {
     try{
-        search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
         search({_id : {$nin : quizIDs}}, 9, quizTable, callback)
     } catch(err){
         callback(null, err)
