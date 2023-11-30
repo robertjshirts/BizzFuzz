@@ -69,6 +69,7 @@ const read = async (identifier, table, callback, projection = {}) => {
     await executeQuery(async (database) => {
         collection = database.collection(table)
         let result = await collection.findOne(identifier, projection)
+
         callback(result, null)
     }, callback)
 }

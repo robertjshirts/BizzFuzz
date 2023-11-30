@@ -10,79 +10,17 @@ const users = require('./userHandler.js');
  * @param {function(result,err)} callback passed function to handle the result and error outcome (result = [array of quizlets])
  */
 const getNewQuizzes = async (userId, pageNumber, callback) => {
-
     users.getUserData(userId, async (result, err) => {
-
-        if (err) {
-            callback(null, err)
-        } else {
-            console.log(result)
-            if (result.completedQuizzes) {
-                console.log("working")
-                let quizIds = [];
-                let quizlets = [];
-                Array.prototype.forEach.call(result.completedQuizzes, (element) => {
-                    quizIds.push(element.quizId);
-                });
-                while (pageNumber > 1) {
+        if (result.completedQuizzes) {
+            let quizIds = []
+            await result.completedQuizzes.forEach(element => {
+                quizIds.push(element.quizId)
+            });
+            
+            try {
+                data.getQuizlets(quizIds, pageNumber, (result, err) => {
                     try {
-                        const result = await getQuizletsAsync(quizIds);
-                        Array.prototype.forEach.call(result, (element) => {
-                            quizIds.push(element._id);
-                        });
-                    } catch (err) {
-                        callback(null, err);
-                        return;
-                    }
-                    pageNumber = pageNumber - 1;
-                }
-                try {
-                    data.getQuizlets(quizIds, (result, err) => {
-                        try {
-                            let quizlets = [];
-                            result.forEach(element => {
-                                let quizlet = {
-                                    "id": element._id,
-                                    "name": element.name,
-                                    "description": element.description,
-                                    "dateCreated": element.dateCreated,
-                                    "image": element.image,
-                                    "creator": element.creator,
-                                    "submissions": element.submissions
-                                };
-                                quizlets.push(quizlet);
-                            });
-                            callback(quizlets, err);
-                        } catch (err) {
-                            callback(null, err);
-                        }
-                    });
-                    callback(quizlets, null);
-                } catch (err) {
-                    callback(null, err);
-                }
-
-            } else {
-
-                let quizIds = [];
-                while (pageNumber > 1) {
-                    try {
-                        const result = await getQuizletsAsync(quizIds);
-
-                        result.forEach(element => {
-                            quizIds.push(element._id);
-                        });
-                    } catch (err) {
-                        callback(null, err);
-                        return;
-                    }
-
-                    pageNumber = pageNumber - 1;
-                }
-                console.log(quizIds);
-                data.getQuizlets(quizIds, (result, err) => {
-                    try {
-                        let quizlets = [];
+                        let quizlets = []
                         result.forEach(element => {
                             let quizlet = {
                                 "id": element._id,
@@ -92,37 +30,46 @@ const getNewQuizzes = async (userId, pageNumber, callback) => {
                                 "image": element.image,
                                 "creator": element.creator,
                                 "submissions": element.submissions
-                            };
-                            quizlets.push(quizlet);
-                        });
-                        callback(quizlets, err);
+                            }
+                            quizlets.push(quizlet)
+                        })
+                        callback(quizlets, err)
+                        return;
                     } catch (err) {
-                        callback(null, err);
+                        callback(null, err)
+                        return;
                     }
-                });
+                })
+            } catch (err) {
+                callback(null, err)
             }
+        } else {
+            data.getQuizlets([], pageNumber, (result, err) => {
+                try {
+                    let quizlets = []
+                    result.forEach(element => {
+                        let quizlet = {
+                            "id": element._id,
+                            "name": element.name,
+                            "description": element.description,
+                            "dateCreated": element.dateCreated,
+                            "image": element.image,
+                            "creator": element.creator,
+                            "submissions": element.submissions
+                        }
+                        quizlets.push(quizlet)
+                    })
+                    callback(quizlets, err)
+                    return;
+                } catch (err) {
+                    callback(null, err)
+                    return;
+                }
+            })
         }
     })
 
 }
-
-/**
- * an async version to of getQuizlets
- * 
- * @param {*} quizIds the ids that are NOT returned
- * @returns quizzes that have an id outside of the quizIds list
- */
-const getQuizletsAsync = (quizIds) => {
-    return new Promise((resolve, reject) => {
-        data.getQuizlets(quizIds, (result, err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
-    });
-};
 
 
 /**
@@ -203,6 +150,11 @@ const getQuiz = (quizId, callback) => {
     data.getQuiz(quizId, (result, err) => {
         callback(result, err)
     })
+}
+
+
+const searchQuizzes = (userId, pageNumber, searchQuerry, sortType, callback) =>{
+    
 }
 
 module.exports = {
