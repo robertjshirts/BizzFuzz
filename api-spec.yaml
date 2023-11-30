@@ -232,7 +232,8 @@ paths:
                 type: string
   /quizlets:
     get:
-      summary: Retrieve 9 new quizlets for given userId
+      summary: Retrieve up to 9 new quizlets for given userId
+      description: query field in request body is only necessary when searching. For home page, it can be left empty. Reccomended sort for home page is "MOST POPULAR"
       requestBody:
         required: true
         content:
@@ -241,7 +242,7 @@ paths:
               $ref: '#/components/schemas/QuizletDataRequest'
       responses:
         '200':
-          description: Returns 9 quizlet objects
+          description: Returns up to 9 quizlet objects
           content:
             application/json:
               schema:
@@ -259,27 +260,6 @@ paths:
               schema:
                 type: string
   /quizzes:
-    get:
-      summary: Get all quiz data
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/QuizDataRequest'
-      responses:
-        '200':
-          description: Found quiz data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizDataResponse'
-        '404':
-          description: No quiz with that ID found
-          content:
-            text/plain:
-              schema:
-                type: string
     post:
       summary: Create a new quiz
       requestBody:
@@ -308,19 +288,49 @@ paths:
               schema:
                 type: string
         '500':
-          description: There was an interanl error
+          description: There was an internal error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /quizzes/{quizId}:
+    get:
+      summary: Get all quiz data
+      parameters:
+        - name: quizId
+          in: path
+          required: true
+          description: quizId to get all quiz data
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Found quiz data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizDataResponse'
+        '404':
+          description: No quiz with that ID found
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an internal error
           content:
             text/plain:
               schema:
                 type: string
     delete:
       summary: delete a quiz with quizId. Requires a session with the creator of the quiz (login)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: 
-              $ref: '#/components/schemas/QuizDeleteRequest'
+      parameters:
+        - name: quizId
+          in: path
+          required: true
+          description: quizId that corresponds with quiz to delete
+          schema:
+            type: string
       responses:
         '204': 
           description: No reponse - Quiz successfully deleted
@@ -342,7 +352,6 @@ paths:
             text/plain:
               schema:
                 type: string
-    
 
 
 components: 
@@ -400,16 +409,34 @@ components:
     #Quizlet GET section
     QuizletDataRequest:
       type: object
+      description: query should be empty and sort should be MOST POPULAR when loading home page, when searching, use send search term in query field, and when changing sort, use one of the enums
       properties:
         userId:
           type: string
           description: uuid v4 prefixed with a 'u'
           example: 'ubd002d37-e846-4152-9736-0f23baba5c34'
+        page:
+          type: integer
+          description: the page number that you want (default should be 1)
+          minimum: 1
+          example: 2
+        query:
+          type: string
+          description: search query, if searching
+          example: harry
+        sort:
+          type: string
+          enum:
+            - MOST POPULAR
+            - LEAST POPULAR
+            - NEWEST
+            - OLDEST
+            - MOST RELEVANT
     QuizletDataResponse:
       type: array
       items:
         $ref: '#/components/schemas/QuizletData'
-      minItems: 9
+      minItems: 1
       maxItems: 9
     QuizletData:
       type: object
@@ -439,16 +466,10 @@ components:
         submissions:
           type: integer
           description: the number of times the quiz has been taken
+          minimum: 0
           example: 126
 
     #Quiz GET section
-    QuizDataRequest:
-      type: object
-      properties:
-        quizId:
-          type: string
-          description: uuid v4 prefixed with a 'q'
-          example: 'qb78b21e7-8b87-4578-9366-c9936ebdca08'
     QuizDataResponse:
       type: object
       properties:
@@ -501,11 +522,14 @@ components:
           example: Red
         result:
           type: integer
-          description: the result that the answer corresponds with
-          example: Gryffindor
+          description: the result that the answer corresponds with (index of the result, 0 based)
+          minimum: 0
+          maximum: 3
+          example: 0
         weight:
           type: integer
           description: the weight that gets added to the result
+          minimum: 1
           example: 14
     QuizDataResult:
       type: object
@@ -541,12 +565,3 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QuizDataResult'
-
-    #Quiz DELETE section
-    QuizDeleteRequest:
-      type: object
-      properties:
-        quizId:
-          type: string
-          description: uuid v4 prefixed with a 'q'
-          example: 'qbd002d37-e846-4152-9736-0f23baba5c34'

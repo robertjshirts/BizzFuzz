@@ -3,7 +3,7 @@ const Joi = require('joi');
 // Ansers inside of each question6
 const answerSchema = Joi.object({
     option: Joi.string().required(),
-    result: Joi.number().integer().min(1).required(),
+    result: Joi.number().integer().min(0).max(3).required(),
     weight: Joi.number().integer().min(1).required()
 });
 
@@ -36,12 +36,9 @@ const validateQuizPost = (req, res, next) => {
     next();
 };
 
-const quizId = Joi.object({
-    quizId: Joi.string().required()
-})
-
 const validateQuizGet = (req, res, next) => {
-    const { error } = quizId.validate(req.body);
+    const id = req.params.quizId.slice(1);
+    const { error } = Joi.string().guid().validate(id);
     if (error) {
         return res.status(400).send(error.details[0].message);
     }
@@ -49,7 +46,8 @@ const validateQuizGet = (req, res, next) => {
 }
 
 const validateQuizDelete = (req, res, next) => {
-    const { error } = quizId.validate(req.body);
+    const id = req.params.quizId.slice(1);
+    const { error } = Joi.string().guid().validate(id);
     if (error) {
         return res.status(400).send(error.details[0].message);
     }
