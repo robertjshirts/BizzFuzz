@@ -4,14 +4,14 @@ const quizHandler = require('../BLL/quizHandler');
 const { validateQuizPost, validateQuizGet, validateQuizDelete } = require('../validation/quizValidation');
 
 const authenticate = (req, res, next) => {
-    if (!req.signedIn) {
+    if (!req.session.signedIn) {
         return res.status(401).send("You are not logged in!")
     }
     next();
 }
 
 const authorize = (req, res, next) => {
-    quizHandler.getQuiz(req.session.userId, (result, err) => {
+    quizHandler.getQuiz(req.params.quizId, (result, err) => {
         if (err) {
             if (err === "No entity with that identifier exists!") {
                 return res.status(404).send("There is no quiz with that id!")

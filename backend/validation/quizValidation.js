@@ -3,7 +3,7 @@ const Joi = require('joi');
 // Ansers inside of each question6
 const answerSchema = Joi.object({
     option: Joi.string().required(),
-    result: Joi.number().integer().min(1).required(),
+    result: Joi.number().integer().min(0).max(3).required(),
     weight: Joi.number().integer().min(1).required()
 });
 

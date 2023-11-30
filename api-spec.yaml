@@ -418,6 +418,7 @@ components:
         page:
           type: integer
           description: the page number that you want (default should be 1)
+          minimum: 1
           example: 2
         query:
           type: string
@@ -465,6 +466,7 @@ components:
         submissions:
           type: integer
           description: the number of times the quiz has been taken
+          minimum: 0
           example: 126
 
     #Quiz GET section
@@ -520,11 +522,14 @@ components:
           example: Red
         result:
           type: integer
-          description: the result that the answer corresponds with
-          example: Gryffindor
+          description: the result that the answer corresponds with (index of the result, 0 based)
+          minimum: 0
+          maximum: 3
+          example: 0
         weight:
           type: integer
           description: the weight that gets added to the result
+          minimum: 1
           example: 14
     QuizDataResult:
       type: object

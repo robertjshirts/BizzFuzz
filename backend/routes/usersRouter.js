@@ -80,7 +80,7 @@ router.delete('/:username', validateUserDelete, authenticate, authorize, (req, r
 })
 
 router.put('/:username', validateUserPut, authenticate, authorize, (req, res) => {
-    userHandler.updateUser(result.userId, updateData, (result, err) => {
+    userHandler.updateUser(req.session.userId, { password: req.body.newPassword }, (result, err) => {
         if (err) {
             res.status(500).send("There was an internal error!");
             return;
