@@ -1,16 +1,10 @@
 <script>
-  import "../app.postcss";
-  import "..//styles.css";
-  import Header from "$lib/Navigation/MainHeader.svelte";
+	import '../app.postcss';
+
+	// Floating UI for Popups
+	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
+	import { storePopup } from '@skeletonlabs/skeleton';
+	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 </script>
 
-
-<div class="app">
-
-
-  <main>
-    <slot />
-  </main>
-
-</div>
-
+<slot />

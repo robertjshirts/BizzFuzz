@@ -19,8 +19,16 @@ paths:
       responses:
         '200':
           description: OK - The session with that username exists
+          content:
+            text/plain:
+              schema:
+                type: string
         '404':
           description: Not found - The sessions with that username does not exist
+          content:
+            text/plain:
+              schema:
+                type: string
     post:
       summary: Creates a session
       description: Validates username and password, and creates a session if a user with credentials exists
@@ -40,10 +48,22 @@ paths:
       responses:
         '201':
           description: Created - The session was created
+          content:
+            text/plain:
+              schema:
+                type: string
         '400':
           description: Bad request - Missing parts or all of requestBody
+          content:
+            text/plain:
+              schema:
+                type: string
         '403':
           description: Forbidden - Wrong credentials
+          content:
+            text/plain:
+              schema:
+                type: string
     delete:
       summary: Deletes a session
       description: Will only destroy the session if the username matches the session
@@ -57,8 +77,6 @@ paths:
       responses:
         '204':
           description: No content - The session was deleted
-        '404':
-          description: Not found - The session with that username does not exist
   /users/{username}:
     get:
       summary: Retrieve all data for the user in the path parameter
@@ -84,8 +102,22 @@ paths:
                 $ref: '#/components/schemas/UserData'
         '400':
           description: Bad request - Missing requestBody
+          content:
+            text/plain:
+              schema:
+                type: string
         '403':
           description: Forbidden - Wrong credentials
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an interanl error
+          content:
+            text/plain:
+              schema:
+                type: string
     post:
       summary: Create an account with the specified username and password
       description: Also creates a session for that user (so you don't need to send a login request right afterwards)
@@ -105,10 +137,22 @@ paths:
       responses:
         '201': 
           description: Created - User successfully created 
+          content:
+            text/plain:
+              schema:
+                type: string
         '400':
           description: Bad request - missing requestBody
+          content:
+            text/plain:
+              schema:
+                type: string
         '409':
           description: Conflict - Username already taken
+          content:
+            text/plain:
+              schema:
+                type: string
     delete:
       summary: Delete an account with specified username
       description: Will fail if password doesn't match
@@ -130,8 +174,22 @@ paths:
           description: No Reponse - User successfully deleted
         '400':
           description: Bad request - Missing requestBody
+          content:
+            text/plain:
+              schema:
+                type: string
         '403': 
           description: Forbidden - Wrong credentials
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an internal error
+          content:
+            text/plain:
+              schema:
+                type: string
     put:
       summary: Change the password of the account
       parameters:
@@ -150,10 +208,151 @@ paths:
       responses:
         '200':
           description: OK - Successfully updated
+          content:
+            text/plain:
+              schema:
+                type: string
         '400':
           description: Bad request - Missing requestBody
+          content:
+            text/plain:
+              schema:
+                type: string
         '403':
           description: Forbidden - Wrong credentials
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an internal error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /quizlets:
+    get:
+      summary: Retrieve up to 9 new quizlets for given userId
+      description: query field in request body is only necessary when searching. For home page, it can be left empty. Reccomended sort for home page is "MOST POPULAR"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizletDataRequest'
+      responses:
+        '200':
+          description: Returns up to 9 quizlet objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizletDataResponse'
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an internal error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /quizzes:
+    post:
+      summary: Create a new quiz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizCreationRequest'
+      responses:
+        '201':
+          description: Quiz successfully created
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - Not logged into any account
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an internal error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /quizzes/{quizId}:
+    get:
+      summary: Get all quiz data
+      parameters:
+        - name: quizId
+          in: path
+          required: true
+          description: quizId to get all quiz data
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Found quiz data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizDataResponse'
+        '404':
+          description: No quiz with that ID found
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an internal error
+          content:
+            text/plain:
+              schema:
+                type: string
+    delete:
+      summary: delete a quiz with quizId. Requires a session with the creator of the quiz (login)
+      parameters:
+        - name: quizId
+          in: path
+          required: true
+          description: quizId that corresponds with quiz to delete
+          schema:
+            type: string
+      responses:
+        '204': 
+          description: No reponse - Quiz successfully deleted
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - Not logged in
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: Wrong credentials
+          content:
+            text/plain:
+              schema:
+                type: string
+
 
 components: 
   schemas:
@@ -207,19 +406,37 @@ components:
         result:
           $ref: '#/components/schemas/QuizDataResult'
 
-    #Quizlet section
+    #Quizlet GET section
     QuizletDataRequest:
       type: object
+      description: query should be empty and sort should be MOST POPULAR when loading home page, when searching, use send search term in query field, and when changing sort, use one of the enums
       properties:
         userId:
           type: string
           description: uuid v4 prefixed with a 'u'
           example: 'ubd002d37-e846-4152-9736-0f23baba5c34'
+        page:
+          type: integer
+          description: the page number that you want (default should be 1)
+          minimum: 1
+          example: 2
+        query:
+          type: string
+          description: search query, if searching
+          example: harry
+        sort:
+          type: string
+          enum:
+            - MOST POPULAR
+            - LEAST POPULAR
+            - NEWEST
+            - OLDEST
+            - MOST RELEVANT
     QuizletDataResponse:
       type: array
       items:
         $ref: '#/components/schemas/QuizletData'
-      minItems: 9
+      minItems: 1
       maxItems: 9
     QuizletData:
       type: object
@@ -249,16 +466,10 @@ components:
         submissions:
           type: integer
           description: the number of times the quiz has been taken
+          minimum: 0
           example: 126
 
-    #Quiz section
-    QuizDataRequest:
-      type: object
-      properties:
-        quizId:
-          type: string
-          description: uuid v4 prefixed with a 'q'
-          example: 'qb78b21e7-8b87-4578-9366-c9936ebdca08'
+    #Quiz GET section
     QuizDataResponse:
       type: object
       properties:
@@ -311,11 +522,14 @@ components:
           example: Red
         result:
           type: integer
-          description: the result that the answer corresponds with
-          example: Gryffindor
+          description: the result that the answer corresponds with (index of the result, 0 based)
+          minimum: 0
+          maximum: 3
+          example: 0
         weight:
           type: integer
           description: the weight that gets added to the result
+          minimum: 1
           example: 14
     QuizDataResult:
       type: object
@@ -328,3 +542,26 @@ components:
           type: string
           description: a description of the result
           example: 'Congrats you''re a normie!'
+    
+    #Quiz POST section
+    QuizCreationRequest:
+      type: object
+      properties:
+        name: 
+          type: string
+          description: Name of the quiz
+        description:
+          type: string
+          description: Description for the quiz
+        creator:
+          type: string
+          description: the creators userId, which is a uuid v4 prefixed with a u 
+          example: 'u956fbe0e-21f0-48d0-aaa8-43d213446b43'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizDataQuestion'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizDataResult'
