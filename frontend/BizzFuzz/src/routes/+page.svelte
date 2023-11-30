@@ -1,6 +1,21 @@
-<!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
+<script>
+	import welcome from '$lib/images/svelte-welcome.webp';
+	import welcome_fallback from '$lib/images/svelte-welcome.png';
+	import { onDestroy, onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div class="space-y-5">
-	</div>
-</div>
+
+
+
+	onMount(() => {
+        goto('/home');
+    });
+
+
+</script>
+
+
+<svelte:head>
+	<title>Pastify</title>
+	<meta name="Pastify" content="Pastify" />
+</svelte:head>

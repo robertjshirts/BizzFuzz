@@ -160,4 +160,3 @@ module.exports = {
     deleteUser: deleteUser,
     getUserData: getUserData
 }
-
