@@ -92,7 +92,7 @@ const createUser = (userInfo) => {
 }
 
 const search = (searchTerm) => {
-    dal.search(searchTerm, 9, 1, 5, (result, err) => {
+    dal.search(searchTerm, 9, 1, 'MOST POPULAR', (result, err) => {
         if(err !== null){
             console.log(err)
         } else {
@@ -147,9 +147,9 @@ arrayOfQuiz = ['q9366e7dd-0fa2-4b68-9250-3eb03b1867f7','q9c33c0fd-56e5-4975-a067
 //deleteQuiz("uc8faa693-54ed-46ec-81f8-06bea4d86016", 'u07c309cd-3b32-4208-a5a5-0fd7eb494017')
 //updateQuiz("qecd0f1d5-f16b-430e-a188-35f586fef15d")
 //createUser(user)
-//search('ultimate quiz')
+search('movie quiz')
 //updateResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
 //readResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
-deleteResult('u91df3a75-20c8-4789-be46-63abfbf1bc81')
+//deleteResult('u91df3a75-20c8-4789-be46-63abfbf1bc81')
 
 

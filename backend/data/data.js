@@ -170,12 +170,13 @@ const search = (filter, numberOfItems, pageNumber, searchType, callback) => {
         case 'OLDEST': // oldest
             sorting = {dateCreate: 1}
             break
-        case 'MOST RELEVENT': //Most relevent
+        case 'MOST RELEVANT': //Most relevant
             var projection = { score: { $meta: "textScore" } }
             sorting = {score: { $meta: "textScore"}} 
             break
         default:
-            sorting = {submissions : -1}
+            var projection = { score: { $meta: "textScore" } }
+            sorting = {score: { $meta: "textScore"}}
             break
     }
     
