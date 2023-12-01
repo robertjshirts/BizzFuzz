@@ -67,7 +67,10 @@ const signUpUser = async (userJson, callback) => {
 const logInUser = (userJson, callback) => {
 
     userStoredData = data.getUserByUsername(userJson.username, async (result, err) => {
-        if (err) {
+        if (result === null){
+            callback(null, 'user not found')
+            return;
+        }else if (err ) {
             callback(null, err)
             return;
         }
