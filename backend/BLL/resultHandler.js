@@ -8,7 +8,7 @@ const quizes = require('./quizHandler.js')
  * Posts a result for a user.
  *
  * @param {string} userId - The unique identifier of the user.
- * @param {object} resultObj - The result object to be posted.
+ * @param {object} resultObj - The result object to be posted before result calculation.
  * @param {function(result, err)} callback - The callback function to handle the result or error.
  */
 const postResult = (userId, resultObj, callback) => {
@@ -35,9 +35,10 @@ const deleteResult = (userId, resultId, callback) => {
  *
  * @param {string} userId - The unique identifier of the user.
  * @param {string} resultId - The unique identifier of the result to be updated.
+ * @param {object} resultChanges - a json obj that holds only the data to be changed 
  * @param {function(result, err)} callback - The callback function to handle the updated result or error.
  */
-const updateResult = (userId, resultId, callback) => {
+const updateResult = (userId, resultId, resultChanges, callback) => {
 
 
 
