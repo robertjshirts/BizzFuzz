@@ -388,6 +388,7 @@ paths:
               schema:
                 type: string
     delete:
+      summary: deletes all of a user's quiz history. must be logged in
       requestBody:
         required: true
         content:
@@ -395,6 +396,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ResultDeleteRequest'
       responses:
+        '204':
+          description: No content - all results successfully deleted
         '400':
           description: Bad request - There was an issue with the request body
           content:
@@ -652,7 +655,7 @@ components:
         description:
           type: string
           description: The description of the result
-          example: You were sorted into the most noble, the most valiant of houses. Fucking nerd
+          example: You were sorted into the most noble, the most valiant of houses.
 
     #Result DELETE section
     ResultDeleteRequest:
