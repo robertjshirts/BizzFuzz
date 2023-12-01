@@ -98,6 +98,9 @@ const logInUser = (userJson, callback) => {
 const getUserData = (userId, callback) => {
 
     userData = data.getUser(userId, (result, err) => {
+        if(userId === '-1'){
+            callback({"name":"Guest","completedQuizzes":"non"},null)
+        }else{
         try {
             if (err) {
                 callback(null, (err))
@@ -107,7 +110,9 @@ const getUserData = (userId, callback) => {
         } catch (error) {
             callback(null, error)
         }
-        callback(result, null)
+        
+            callback(result, null)
+        }
     })
 
 }

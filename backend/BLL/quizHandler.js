@@ -11,7 +11,9 @@ const users = require('./userHandler.js');
  */
 const getNewQuizzes = async (userId, pageNumber, callback) => {
     users.getUserData(userId, async (result, err) => {
-        if (result.completedQuizzes) {
+        console.log(result)
+
+        if (!(userId=== '-1') && result.completedQuizzes !=null) {
             let quizIds = []
             await result.completedQuizzes.forEach(element => {
                 quizIds.push(element.quizId)
