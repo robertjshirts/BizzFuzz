@@ -296,7 +296,7 @@ const createResult = (userID, quizResult, callback) => {
     try{
         quizResult.dateTaken = Date.now()
         appendedData = {
-            $push : {completedQuizzes: quizResults}
+            $push : {completedQuizzes: quizResult}
         }
         update({_id : userID}, appendedData, userTable, 2, callback)
     } catch(err){
