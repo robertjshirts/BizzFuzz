@@ -153,8 +153,30 @@ const getQuiz = (quizId, callback) => {
 }
 
 
-const searchQuizzes = (userId, pageNumber, searchQuerry, sortType, callback) =>{
-    
+const searchQuizlets = (pageNumber, searchQuerry, sortType, callback) => {
+
+    data.search(searchQuerry, 9, pageNumber, sortType, (result, err) => {
+        try {
+            let quizlets = []
+            result.forEach(element => {
+                let quizlet = {
+                    "id": element._id,
+                    "name": element.name,
+                    "description": element.description,
+                    "dateCreated": element.dateCreated,
+                    "image": element.image,
+                    "creator": element.creator,
+                    "submissions": element.submissions
+                }
+                quizlets.push(quizlet)
+            })
+            callback(quizlets, err)
+            return;
+        } catch (err) {
+            callback(null, err)
+            return;
+        }
+    })
 }
 
 module.exports = {
@@ -162,5 +184,6 @@ module.exports = {
     deleteUserQuiz: deleteUserQuiz,
     postUserQuizResults: postUserQuizResults,
     createQuiz: createQuiz,
-    getQuiz: getQuiz
+    getQuiz: getQuiz,
+    searchQuizlets: searchQuizlets
 }
