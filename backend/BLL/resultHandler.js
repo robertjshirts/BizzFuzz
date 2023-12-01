@@ -28,9 +28,15 @@ const postResult = (userId, quizId, resultArrayObj, callback) => {
 
             finalResult = result.results[outcome]
             finalResult.quizId = quizId
-            data.createResult(userId, finalResult, (result, err) => {
-                callback(result, err)
-            })
+
+            if(userId === -1){
+                callback(finalResult, err)
+            }else{
+                data.createResult(userId, finalResult, (result, err) => {
+                    callback(finalResult, err)
+                })
+            }
+
 
         } catch (error) {
             callback(null, error)
