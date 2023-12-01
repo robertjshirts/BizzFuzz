@@ -175,7 +175,8 @@ const search = (filter, numberOfItems, pageNumber, searchType, callback) => {
             sorting = {score: { $meta: "textScore"}} 
             break
         default:
-            sorting = {submissions : -1}
+            var projection = { score: { $meta: "textScore" } }
+            sorting = {score: { $meta: "textScore"}}
             break
     }
     
