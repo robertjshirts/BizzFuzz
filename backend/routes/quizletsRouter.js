@@ -6,7 +6,9 @@ const { validateQuizletGet } = require('../validation/quizletValidation');
 
 router.get('/', validateQuizletGet, (req, res) => {
     if (!req.body.query) {
-        quizHandler.getNewQuizzes(req.body.userId, req.body.page, (result, err) => {
+        quizHandler.getNewQuizzes(
+            (req.session.signedIn) ? req.session.userId : -1, 
+            req.body.page, (result, err) => {
             if (err) {
                 return res.status(500).send("There was an internal error!");
             }

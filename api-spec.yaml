@@ -465,10 +465,6 @@ components:
       type: object
       description: query should be empty and sort should be MOST POPULAR when loading home page, when searching, use send search term in query field, and when changing sort, use one of the enums
       properties:
-        userId:
-          type: string
-          description: uuid v4 prefixed with a 'u'
-          example: 'ubd002d37-e846-4152-9736-0f23baba5c34'
         page:
           type: integer
           description: the page number that you want (default should be 1)
