@@ -20,12 +20,22 @@ router.post('', validateResultPost, (req, res) => {
             return res.status(500).send("There was an internal error!");
         }
 
-        return res.status(200).send(result);
+        return res.status(201).send(result);
     })
 })
 
 router.get('', validateResultGet, authenticate, (req, res) => {
-    
+    resultHandler.getResult(req.session.userId, req.body.quizId, (result, err) => {
+        if (err) {
+            return res.status(500).send("There was an internal error!");
+        }
+
+        if (!result) {
+            return res.status(404).send("You have not taken this quiz!");
+        }
+
+        return res.status(200).send(result.completedQuizzes[0]); // Should offload this to the BLL
+    })
 })
 
 router.delete('', validateResultDelete, authenticate, (req, res) => {
