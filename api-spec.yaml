@@ -638,7 +638,22 @@ components:
           description: The list of answers that the user selected
           items:
             $ref: '#/components/schemas/QuizDataAnswer'
-      
+    ResultPostResponse:
+      type: object
+      properties:
+        quizId:
+          type: string
+          description: the quizId of the quiz that was taken
+          example: 'qe0cb6ef5-5e4f-4765-9e25-45d32ec50ecd'
+        name:
+          type: string
+          description: The name of the result
+          example: Gryffindor
+        description:
+          type: string
+          description: The description of the result
+          example: You were sorted into the most noble, the most valiant of houses. Fucking nerd
+
     #Result DELETE section
     ResultDeleteRequest:
       type: object

@@ -18,11 +18,13 @@ app.use(cors({
     credentials: true
 }))
 
+const resultsRouter = require('./routes/resultsRouter');
 const quizletsRouter = require('./routes/quizletsRouter');
 const quizzesRouter = require('./routes/quizzesRouter');
 const sessionsRouter = require('./routes/sessionsRouter');
 const usersRouter = require('./routes/usersRouter');
 
+app.use('/results', resultsRouter)
 app.use('/quizlets', quizletsRouter);
 app.use('/quizzes', quizzesRouter);
 app.use('/sessions', sessionsRouter);

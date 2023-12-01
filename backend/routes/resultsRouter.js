@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-// const quizHandler = require('../BLL/quizHandler');
+const resultHandler = require('../BLL/resultHandler');
 const { validateResultPost, validateResultGet, validateResultDelete } = require('../validation/resultValidation');
 
 const authenticate = (req, res, next) => {
@@ -11,23 +11,23 @@ const authenticate = (req, res, next) => {
     next();
 }
 
-const authorize = (req, res, next) => {
-    if (!req.session.signedIn && req.body.userId !== -1) {
-        res.status(403).send("")
-    }
+router.post('', validateResultPost, (req, res) => {
+    resultHandler.postResult(
+        (req.session.signedIn) ? req.session.userId : -1, 
+        req.body.quizId, req.body.answers, (result, err) => {
+        if (err) {
+            return res.status(500).send("There was an internal error!");
+        }
 
-    next();
-}
-
-router.post('', validateResultGet, (req, res) => {
-
+        return res.status(200).send(result);
+    })
 })
 
-router.get('', validateResultGet, authenticate, authorize, (req, res) => {
+router.get('', validateResultGet, authenticate, (req, res) => {
     
 })
 
-router.delete('', validateResultDelete, authenticate, authorize, (req, res) => {
+router.delete('', validateResultDelete, authenticate, (req, res) => {
 
 })
 
