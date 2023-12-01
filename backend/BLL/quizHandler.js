@@ -152,15 +152,46 @@ const getQuiz = (quizId, callback) => {
     })
 }
 
+/**
+ * returns 9 quizlets based on the search result
+ * 
+ * @param {INT} pageNumber the page the user is on
+ * @param {String} searchQuerry the term the user searches on
+ * @param {INT} sortType the type of search like most popular least popular
+ * @param {function(result, err)} callback result = array of quizlets
+ */
+const searchQuizlets = (pageNumber, searchQuerry, sortType, callback) => {
 
-const searchQuizzes = (userId, pageNumber, searchQuerry, sortType, callback) =>{
-    
+    data.search(searchQuerry, 9, pageNumber, sortType, (result, err) => {
+        try {
+            let quizlets = []
+            result.forEach(element => {
+                let quizlet = {
+                    "id": element._id,
+                    "name": element.name,
+                    "description": element.description,
+                    "dateCreated": element.dateCreated,
+                    "image": element.image,
+                    "creator": element.creator,
+                    "submissions": element.submissions
+                }
+                quizlets.push(quizlet)
+            })
+            callback(quizlets, err)
+            return;
+        } catch (err) {
+            callback(null, err)
+            return;
+        }
+    })
 }
+
 
 module.exports = {
     getNewQuizzes: getNewQuizzes,
     deleteUserQuiz: deleteUserQuiz,
     postUserQuizResults: postUserQuizResults,
     createQuiz: createQuiz,
-    getQuiz: getQuiz
+    getQuiz: getQuiz,
+    searchQuizlets, searchQuizlets
 }
