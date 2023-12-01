@@ -3,91 +3,6 @@
 const { userInfo } = require('os')
 const dal = require('..\\backend\\data\\data.js')
 
-const quiz = 
-    {
-        "_id": "q1dfc15f5-c38b-405a-b41c-0e68f3d8d79e",
-        "name": "Personality Quiz",
-        "description": "Discover your true self with this fun quiz!",
-        "image": "base64_encoded_image_string",
-        "creator": "user123",
-        "questions": [
-          {
-            "prompt": "What is your favorite color?",
-            "answers": [
-              {
-                "option": "Red",
-                "result": 1,
-                "weight": 5
-              },
-              {
-                "option": "Blue",
-                "result": 2,
-                "weight": 5
-              },
-              {
-                "option": "Green",
-                "result": 3,
-                "weight": 5
-              },
-              {
-                "option": "Yellow",
-                "result": 4,
-                "weight": 5
-              }
-            ]
-          },
-          {
-            "prompt": "What is your preferred season?",
-            "answers": [
-              {
-                "option": "Spring",
-                "result": 1,
-                "weight": 5
-              },
-              {
-                "option": "Summer",
-                "result": 2,
-                "weight": 5
-              },
-              {
-                "option": "Fall",
-                "result": 3,
-                "weight": 5
-              },
-              {
-                "option": "Winter",
-                "result": 4,
-                "weight": 5
-              }
-            ]
-          }
-        ],
-        "results": [
-          {
-            "name": "Outcome 1",
-            "description": "You are adventurous and outgoing!",
-            "image": "base64_encoded_image_string"
-          },
-          {
-            "name": "Outcome 2",
-            "description": "You are calm and introspective!",
-            "image": "base64_encoded_image_string"
-          },
-          {
-            "name": "Outcome 3",
-            "description": "You are energetic and social!",
-            "image": "base64_encoded_image_string"
-          },
-          {
-            "name": "Outcome 4",
-            "description": "You are thoughtful and analytical!",
-            "image": "base64_encoded_image_string"
-          }
-        ],
-        "dateCreated": 1700865214971,
-        "submissions": 1,
-        "lastUpdated": 1701143446243
-      }
 
 
 const user = {
@@ -97,7 +12,7 @@ const user = {
 
 const findUser = (id) => {
     dal.getUser(id, (result, err) => {
-        if(err != null){
+        if(err !== null){
             console.log("Something went wrong")
         } else {
             console.log(result)
@@ -106,8 +21,8 @@ const findUser = (id) => {
 }
 
 const userTakesQuiz = (id, quizInfo) => {
-    dal.postQuiz(id, quizInfo, (result, err) => {
-        if(err != null){
+    dal.createResult(id, quizInfo, (result, err) => {
+        if(err !== null){
             console.log(err)
         } else {
             console.log(result)
@@ -177,7 +92,41 @@ const createUser = (userInfo) => {
 }
 
 const search = (searchTerm) => {
-    dal.search(searchTerm, 9, 1, 5, (result, err) => {
+    dal.search(searchTerm, 9, 1, 'MOST POPULAR', (result, err) => {
+        if(err !== null){
+            console.log(err)
+        } else {
+            console.log(result)
+        }
+    })
+}
+
+const updateResult = (userID, quizID) => {
+    change = {
+            name : "Robbie's Testies",
+            description: "You wouldn't believe what this means"
+        }
+    dal.updateResult(userID, quizID, change, (result, err) => {
+        if(err !== null){
+            console.log(err)
+        } else {
+            console.log(result)
+        }
+    })
+}
+
+const readResult = (userID, quizID) => {
+    dal.readResult(userID, quizID, (result, err) => {
+        if(err !== null){
+            console.log(err)
+        } else {
+            console.log(result)
+        }
+    })
+}
+
+const deleteResult = (userID) => {
+    dal.deleteResult(userID, (result, err) => {
         if(err !== null){
             console.log(err)
         } else {
@@ -190,13 +139,17 @@ const search = (searchTerm) => {
 arrayOfQuiz = ['q9366e7dd-0fa2-4b68-9250-3eb03b1867f7','q9c33c0fd-56e5-4975-a067-4b3b974f7e3e']
 
 //createUser(user)
-//findUser("u98c7df55-afb6-40c3-b6d6-56e30c55799e")
+//findUser("ud0382936-d4af-447f-b2a8-e110b4d9e7ee")
 //userTakesQuiz("u98c7df55-afb6-40c3-b6d6-56e30c55799e", quiz)
 //createQuiz(quiz, 'u07c309cd-3b32-4208-a5a5-0fd7eb494017')
-//getQuiz("q992b90a9-5733-450f-bbe5-742f79bdd0a5")
-getQuizlets(arrayOfQuiz, 2)
+//getQuiz("qe0cb6ef5-5e4f-4765-9e25-45d32ec50ecd")
+//getQuizlets(arrayOfQuiz, 2)
 //deleteQuiz("uc8faa693-54ed-46ec-81f8-06bea4d86016", 'u07c309cd-3b32-4208-a5a5-0fd7eb494017')
 //updateQuiz("qecd0f1d5-f16b-430e-a188-35f586fef15d")
 //createUser(user)
-//search('ultimate quiz')
+search('movie quiz')
+//updateResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
+//readResult("ud0382936-d4af-447f-b2a8-e110b4d9e7ee", "q359457c6-ae63-4607-9eed-4850c532a298")
+//deleteResult('u91df3a75-20c8-4789-be46-63abfbf1bc81')
+
 

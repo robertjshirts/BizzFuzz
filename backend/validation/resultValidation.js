@@ -8,13 +8,11 @@ const answerSchema = Joi.object({
 
 const postSchema = Joi.object({
     quizId: Joi.string().required(),
-    userId: Joi.string().required(),
     answers: Joi.array().items(answerSchema).min(1).required()
 })
 
 const getSchema = Joi.object({
-    quizId: Joi.string().required(),
-    userId: Joi.string().required()
+    quizId: Joi.string().required()
 })
 
 const deleteSchema = getSchema;
