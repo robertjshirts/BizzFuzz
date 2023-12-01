@@ -152,7 +152,14 @@ const getQuiz = (quizId, callback) => {
     })
 }
 
-
+/**
+ * returns 9 quizlets based on the search result
+ * 
+ * @param {INT} pageNumber the page the user is on
+ * @param {String} searchQuerry the term the user searches on
+ * @param {INT} sortType the type of search like most popular least popular
+ * @param {function(result, err)} callback result = array of quizlets
+ */
 const searchQuizlets = (pageNumber, searchQuerry, sortType, callback) => {
 
     data.search(searchQuerry, 9, pageNumber, sortType, (result, err) => {
@@ -178,6 +185,7 @@ const searchQuizlets = (pageNumber, searchQuerry, sortType, callback) => {
         }
     })
 }
+
 
 module.exports = {
     getNewQuizzes: getNewQuizzes,
