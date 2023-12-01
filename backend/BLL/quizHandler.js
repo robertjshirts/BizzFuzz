@@ -195,5 +195,5 @@ module.exports = {
     postUserQuizResults: postUserQuizResults,
     createQuiz: createQuiz,
     getQuiz: getQuiz,
-    searchQuizlets, searchQuizlets
+    searchQuizlets: searchQuizlets
 }

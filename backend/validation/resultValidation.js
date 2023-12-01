@@ -22,7 +22,6 @@ const validateResultPost = (req, res, next) => {
     if (error) {
         return res.status(400).send(error.details[0].message);
     }
-    req.body.userId = (req.session.signedIn) ? req.session.userId : -1
     next();
 };
 

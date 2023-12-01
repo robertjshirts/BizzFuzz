@@ -361,6 +361,12 @@ paths:
             schema:
               $ref: '#/components/schemas/ResultGetRequest'
       responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultGetResponse'
         '400': 
           description: Bad request - There was an issue with the request body
           content:
@@ -381,13 +387,26 @@ paths:
             schema:
               $ref: '#/components/schemas/ResultPostRequest'
       responses:
+        '201':
+          description: OK - Result successfully saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultPostResponse'
         '400': 
           description: Bad request - There was an issue with the request body
           content:
             text/plain:
               schema:
                 type: string
+        '404': 
+          description: Not found - There is no result with that quizId
+          content:
+            text/plain:
+              schema:
+                type: string
     delete:
+      summary: deletes all of a user's quiz history. must be logged in
       requestBody:
         required: true
         content:
@@ -395,6 +414,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ResultDeleteRequest'
       responses:
+        '204':
+          description: No content - all results successfully deleted
         '400':
           description: Bad request - There was an issue with the request body
           content:
@@ -465,10 +486,6 @@ components:
       type: object
       description: query should be empty and sort should be MOST POPULAR when loading home page, when searching, use send search term in query field, and when changing sort, use one of the enums
       properties:
-        userId:
-          type: string
-          description: uuid v4 prefixed with a 'u'
-          example: 'ubd002d37-e846-4152-9736-0f23baba5c34'
         page:
           type: integer
           description: the page number that you want (default should be 1)
@@ -628,6 +645,21 @@ components:
           type: string
           description: The quizId for the result (requires a session)
           example: 'qff8045f9-0975-4ca1-ba91-32313a28b6e3'
+    ResultGetResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the result
+          example: Gryffindor
+        description:
+          type: string
+          description: The description of the result
+          example: You were sorted into the most noble, the most valiant of houses.
+        quizId:
+          type: string
+          description: the quizId that the result corresponds with
+          example: 'qc5bc9821-8e02-4e48-99ec-f4dce02b363c'
 
     #Result POST section
     ResultPostRequest:
@@ -642,7 +674,22 @@ components:
           description: The list of answers that the user selected
           items:
             $ref: '#/components/schemas/QuizDataAnswer'
-      
+    ResultPostResponse:
+      type: object
+      properties:
+        quizId:
+          type: string
+          description: the quizId of the quiz that was taken
+          example: 'qe0cb6ef5-5e4f-4765-9e25-45d32ec50ecd'
+        name:
+          type: string
+          description: The name of the result
+          example: Gryffindor
+        description:
+          type: string
+          description: The description of the result
+          example: You were sorted into the most noble, the most valiant of houses.
+
     #Result DELETE section
     ResultDeleteRequest:
       type: object
