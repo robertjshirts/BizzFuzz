@@ -259,7 +259,7 @@ paths:
               schema:
                 type: string
   /quizlets:
-    get:
+    post:
       summary: Retrieve up to 9 new quizlets for given userId
       description: query field in request body is only necessary when searching. For home page, it can be left empty. Reccomended sort for home page is "MOST POPULAR"
       requestBody:
