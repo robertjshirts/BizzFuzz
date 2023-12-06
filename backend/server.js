@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
@@ -14,7 +14,7 @@ app.use(session({
     cookie: { secure: false } 
 }));
 app.use(cors({
-    origin: 'http://localhost:3001',
+    origin: 'http://localhost:3000',
     credentials: true
 }))
 
