@@ -1,6 +1,6 @@
 const {MongoClient} = require('mongodb')
 const { v4: uuidv4 } = require('uuid')
-const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@bizz-fuzz-db-34ca5e5a.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=bizz-fuzz-db'
+const url = 'mongodb+srv://doadmin:51dzQ2863x0r7GST@private-bizz-fuzz-db-25612812.mongo.ondigitalocean.com/bizzfuzz?authSource=admin&replicaSet=bizz-fuzz-db&tls=true'
 
 const userTable = 'users'
 const quizTable = 'quizzes'
@@ -65,14 +65,11 @@ const create = async (data, table, callback) => {
  * @param {string} table - The table (collection) from which to read the document.
  * @param {Function} callback - Callback function to handle the result.
  */
-const read = async (identifier, table, callback) => {
+const read = async (identifier, table, callback, projection = {}) => {
     await executeQuery(async (database) => {
         collection = database.collection(table)
-        let result = await collection.findOne(identifier)
-        if (!result) {
-            callback(null, "No entity with that identifier exists!");
-            return;
-        }
+        let result = await collection.findOne(identifier, projection)
+
         callback(result, null)
     }, callback)
 }
@@ -108,6 +105,12 @@ const update = async (identifier, change, table, updateType, callback) => {
                 }
             }
             break
+        case 4: 
+            updateChange = {
+                $unset: {
+                    ...change.$unset
+                }
+            }
     }
     if (!updateChange.$set) {
         updateChange.$set = {};
@@ -141,7 +144,7 @@ const remove = async (identifier, table, callback) => { // called rmeoved becaus
  * @param {string || Object} filter - Search query. It can be a string (Ex. 'Star Wars') or it can be an object (Ex. {quizName : "test quiz"})
  * @param {number} numberOfItems - the number of documents that are returned
  * @param {number} pageNumber - the page number of the search
- * @param {number} searchType - the type of search that they are trying to get (Ex. 1 = Most Popular results)
+ * @param {string} searchType - the type of search that they are trying to get (Ex. 'MOST POPULAR' = Most Popular results)
  * @param {function} callback - the callabck function
  */
 const search = (filter, numberOfItems, pageNumber, searchType, callback) => {
@@ -155,24 +158,25 @@ const search = (filter, numberOfItems, pageNumber, searchType, callback) => {
     }
     
     switch(searchType){
-        case 1: // Most Popular
+        case 'MOST POPULAR': // Most Popular
             sorting = {submissions : -1}
             break
-        case 2: // Least Popular
+        case 'LEAST POPULAR': // Least Popular
             sorting = {submissions : 1}
             break
-        case 3: // newest
+        case 'NEWEST': // newest
             sorting = {dateCreated: -1}
             break
-        case 4: // oldest
+        case 'OLDEST': // oldest
             sorting = {dateCreate: 1}
             break
-        case 5: //Most relevent
+        case 'MOST RELEVANT': //Most relevent
             var projection = { score: { $meta: "textScore" } }
             sorting = {score: { $meta: "textScore"}} 
             break
         default:
-            sorting = {submissions : -1}
+            var projection = { score: { $meta: "textScore" } }
+            sorting = {score: { $meta: "textScore"}}
             break
     }
     
@@ -291,6 +295,7 @@ const createQuiz = (quizInfo, userID, callback) => {
  */
 const createResult = (userID, quizResult, callback) => {
     try{
+        quizResult.dateTaken = Date.now()
         appendedData = {
             $push : {completedQuizzes: quizResult}
         }
@@ -347,6 +352,12 @@ const deleteQuiz = (quizID, userID, callback) => {
     }
 }
 
+/**
+ * 
+ * @param {*} quizID 
+ * @param {*} changeData 
+ * @param {*} callback 
+ */
 const updateQuiz = (quizID, changeData, callback) => {
     try{
         updateData = {
@@ -356,21 +367,55 @@ const updateQuiz = (quizID, changeData, callback) => {
     } catch(err) {
         callback(null, err)
     }
+} // This works and everything it just isnt going to be used in our project as of right now
+
+/**
+ * Gets the completed quiz using the quizID
+ * @param {string} userID - The id of the user
+ * @param {string} quizID - The id of the completed quiz
+ * @param {function} callback - callback function
+ */
+const readResult = (userID, quizID, callback) => {
+    try {
+        read({_id: userID, "completedQuizzes.quizId": quizID}, userTable, callback, {projection : {"completedQuizzes.$": 1}})
+    } catch (err) {
+        callback(null, err)
+    }
 }
 
-// const updateResult = (userID, changedResults, callback) => {
-//     try{
-//         updateData ={
-//             $set: changedResults
-//         }
-//         update({_id : userID}, updateChange, userTable, 1, callback)
-//     } catch (err) {
-//         callback(null, err)
-//     }
-// }
-// const deleteResult = (userID, ) => {
+/**
+ * Update the results inside of the completed quiz
+ * @param {string} userID - id of the user
+ * @param {string} quizID - id of the completed quiz
+ * @param {Object} changedResults - the RESULT object that is being change. !! Make sure that it is the result object and not the completedQuizzes object !!
+ * @param {function} callback - callback function
+ */
+const updateResult = (userID, quizID, changedResults, callback) => {
+    try{
+        updateData ={
+            $set: {"completedQuizzes.$.result": changedResults}
+        }
+        update({_id : userID, "completedQuizzes.quizId": quizID}, updateData, userTable, 1, callback)
+    } catch (err) {
+        callback(null, err)
+    }
+}
 
-// }
+/**
+ * deletes the completed 
+ * @param {string} userID - The id of the user
+ * @param {function} callback - The callback funciton
+ */
+const deleteResult = (userID, callback) => {
+    try{
+        updateData = {
+            $unset: { "completedQuizzes": ""}
+        }
+        update({_id: userID}, updateData, userTable, 4, callback)
+    } catch (err) {
+        callback(null, err)
+    }
+}
 
 module.exports = {
     createUser: createUser,
@@ -384,5 +429,9 @@ module.exports = {
     getQuizlets: getQuizlets,
     deleteQuiz: deleteQuiz,
     updateQuiz: updateQuiz,
-    search: search
+    search: search,
+    readResult: readResult,
+    updateResult: updateResult,
+    deleteResult: deleteResult
 }
+
