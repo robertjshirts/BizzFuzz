@@ -13,7 +13,7 @@ const getNewQuizzes = async (userId, pageNumber, callback) => {
     users.getUserData(userId, async (result, err) => {
         console.log(result)
 
-        if (!(userId=== '-1') && result.completedQuizzes !=null) {
+        if ((userId != '-1') && result.completedQuizzes) {
             let quizIds = []
             await result.completedQuizzes.forEach(element => {
                 quizIds.push(element.quizId)
@@ -47,6 +47,7 @@ const getNewQuizzes = async (userId, pageNumber, callback) => {
             }
         } else {
             data.getQuizlets([], pageNumber, (result, err) => {
+                console.log(result)
                 try {
                     let quizlets = []
                     result.forEach(element => {

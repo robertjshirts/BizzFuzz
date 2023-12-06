@@ -90,4 +90,18 @@ router.put('/:username', validateUserPut, authenticate, authorize, (req, res) =>
     });
 })
 
+router.get('/uuid/:id', (req, res) => {
+    userHandler.getUserData(req.params.id, (result, err) => {
+        if (err) {
+            return res.status(500).send("There was an internal error!");
+        }
+
+        if (!result) {
+            return res.status(404).send("There is no user with that ID!");
+        }
+
+        return res.status(200).send(result.username)
+    })
+})
+
 module.exports = router;

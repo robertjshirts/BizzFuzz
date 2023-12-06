@@ -230,6 +230,34 @@ paths:
             text/plain:
               schema:
                 type: string
+  /users/username/{id}:
+    get:
+      summary: Retrieves username with the given id (only username). If 404, that means the user has probably been deleted.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '404':
+          description: Not found - There is no username with that id
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: There was an internal error!
+          content:
+            text/plain:
+              schema:
+                type: string
+        '200':
+          description: Returns the username as a plain string (NOT IN AN OBJECT)
+          content:
+            text/plain:
+              schema:
+                type: string
   /quizlets:
     get:
       summary: Retrieve up to 9 new quizlets for given userId
