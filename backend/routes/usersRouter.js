@@ -90,7 +90,7 @@ router.put('/:username', validateUserPut, authenticate, authorize, (req, res) =>
     });
 })
 
-router.get('/uuid/:id', (req, res) => {
+router.get('/username/:id', (req, res) => {
     userHandler.getUserData(req.params.id, (result, err) => {
         if (err) {
             return res.status(500).send("There was an internal error!");
