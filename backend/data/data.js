@@ -325,7 +325,7 @@ const getQuiz = (quizID, callback) => {
  */
 const getQuizlets = (quizIDs, pageNumber, callback) => {
     try{
-        search({_id : {$nin : quizIDs}}, 9, pageNumber, 1, callback)
+        search({_id : {$nin : quizIDs}}, 9, pageNumber, 'MOST POPULAR', callback)
     } catch(err){
         callback(null, err)
     }
