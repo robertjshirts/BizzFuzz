@@ -4,7 +4,7 @@ const quizHandler = require('../BLL/quizHandler');
 const { validateQuizletGet } = require('../validation/quizletValidation');
 
 
-router.get('/', validateQuizletGet, (req, res) => {
+router.post('/', validateQuizletGet, (req, res) => {
     if (!req.body.query) {
         quizHandler.getNewQuizzes(
             (req.session.signedIn) ? req.session.userId : -1, 
