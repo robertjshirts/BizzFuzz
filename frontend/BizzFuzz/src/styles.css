@@ -1,0 +1,211 @@
+
+:root {
+    --font-body: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+        Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-mono: 'Fira Mono', monospace;
+    --gunmetal: #253031ff;        /* New color */
+    --dark-slate-gray: #315659ff; /* New color */
+    --cerulean: #2978a0ff;        /* New color */
+    --carolina-blue: #78acd0ff;   /* New color */
+    --columbia-blue: #c6e0ffff;   /* New color */
+    --color-theme-1: #ff3e00;
+    --color-theme-2: #4075a6;
+    --color-text: rgba(0, 0, 0, 0.7);
+    --column-width: 42rem;
+    --column-margin-top: 4rem;
+    font-family: var(--font-body);
+    color: var(--color-text);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background-attachment: fixed;
+    background-color: var(--carolina-blue); /* Updated color */
+    background-size: 100vw 100vh;
+    background-image:
+        linear-gradient(to top left, var(--gunmetal) 0%, var(--dark-slate-gray) 25%, var(--cerulean) 50%, var(--carolina-blue) 75%, var(--columbia-blue) 100%);
+}
+
+h1,
+h2,
+p {
+	font-weight: 400;
+}
+
+p {
+	line-height: 1.5;
+}
+
+a {
+	color: var(--color-theme-1);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+h1 {
+	font-size: 2rem;
+	text-align: center;
+}
+
+h2 {
+	font-size: 1rem;
+}
+
+pre {
+	font-size: 16px;
+	font-family: var(--font-mono);
+	background-color: rgba(255, 255, 255, 0.45);
+	border-radius: 3px;
+	box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
+	padding: 0.5em;
+	overflow-x: auto;
+	color: var(--color-text);
+}
+
+.text-column {
+	display: flex;
+	max-width: 48rem;
+	flex: 0.6;
+	flex-direction: column;
+	justify-content: center;
+	margin: 0 auto;
+}
+
+input,
+button {
+	font-size: inherit;
+	font-family: inherit;
+}
+
+button:focus:not(:focus-visible) {
+	outline: none;
+}
+
+@media (min-width: 720px) {
+	h1 {
+		font-size: 2.4rem;
+	}
+}
+
+.visually-hidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: auto;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	white-space: nowrap;
+}
+
+
+.password-requirements{
+	margin-top: 1em;
+	text-align: left;
+}
+
+.passwordPopup{
+	position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+
+.navbar-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.43) 0%, rgba(79, 15, 15, 0) 100%);
+    z-index: 100;
+}
+
+.nav-link {
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+        padding: 0 0.5rem;
+        color: var(--color-text);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        transition: color 0.2s linear;
+    }
+
+    .nav-link:hover {
+        color: var(--color-theme-1);
+    }
+
+    .search-bar-nav {
+        flex-grow: .8;
+        display: flex;
+        justify-content: center;
+        color: var(--color-text);
+        outline-color: black;
+        outline-width: thick;
+    }
+
+
+    .right-section {
+        display: flex;
+        align-items: center;
+    }
+
+    .bottom-border {
+        margin-top: 10px;
+        color: black;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+
+
+    .right-section {
+        display: flex;
+        align-items: center;
+    }
+
+    .card-container-delete {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 170px auto;
+        width: 100%;
+        max-width: 500px;
+        height: 50vh;
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 0.45);
+        border-radius: 3px;
+        box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
+        color: var(--color-text);
+
+    }
+
+    .wide-card {
+        width: 800px;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    .quizlet-card {
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
