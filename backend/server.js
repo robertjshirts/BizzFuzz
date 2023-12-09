@@ -24,11 +24,11 @@ const quizzesRouter = require('./routes/quizzesRouter');
 const sessionsRouter = require('./routes/sessionsRouter');
 const usersRouter = require('./routes/usersRouter');
 
-app.use('/results', resultsRouter)
-app.use('/quizlets', quizletsRouter);
-app.use('/quizzes', quizzesRouter);
-app.use('/sessions', sessionsRouter);
-app.use('/users', usersRouter);
+app.use('/api/results', resultsRouter)
+app.use('/api/quizlets', quizletsRouter);
+app.use('/api/quizzes', quizzesRouter);
+app.use('/api/sessions', sessionsRouter);
+app.use('/api/users', usersRouter);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
