@@ -3,10 +3,10 @@ info:
   title: BizzFuzz API
   version: '0.0.1'
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:3001
 
 paths:
-  /sessions/{username}:
+  /api/sessions/{username}:
     get:
       summary: Validate current session for the provided username
       parameters:
@@ -77,7 +77,7 @@ paths:
       responses:
         '204':
           description: No content - The session was deleted
-  /users/{username}:
+  /api/users/{username}:
     get:
       summary: Retrieve all data for the user in the path parameter
       parameters:
@@ -230,7 +230,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /users/username/{id}:
+  /api/users/username/{id}:
     get:
       summary: Retrieves username with the given id (only username). If 404, that means the user has probably been deleted.
       parameters:
@@ -258,7 +258,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /quizlets:
+  /api/quizlets:
     post:
       summary: Retrieve up to 9 new quizlets for given userId
       description: query field in request body is only necessary when searching. For home page, it can be left empty. Reccomended sort for home page is "MOST POPULAR"
@@ -287,7 +287,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /quizzes:
+  /api/quizzes:
     post:
       summary: Create a new quiz
       requestBody:
@@ -321,7 +321,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /quizzes/{quizId}:
+  /api/quizzes/{quizId}:
     get:
       summary: Get all quiz data
       parameters:
@@ -380,7 +380,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /results:
+  /api/results:
     get:
       requestBody:
         required: true
